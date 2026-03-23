@@ -62,14 +62,13 @@ export default function Header() {
         {/* NAV */}
         <nav style={{borderTop:'1px solid #E2D9CC', display:'flex', justifyContent:'center'}}>
           {[
-            {label:'Главная', href:'/'},
-            {label:'Украшения из золота', href:'/jewelry'},
-            {label:'Техника', href:'/tech'},
-            {label:'Новые поступления', href:'/new'},
-            {label:'Акции', href:'/sale'},
-            {label:'Как это работает', href:'/how'},
-            {label:'Сдать на комиссию', href:'/consign'},
-          ].map((item) => (
+  {label:'Главная', href:'/'},
+  {label:'Украшения из золота', href:'/jewelry'},
+  {label:'Техника', href:'/tech'},
+  {label:'В тренде', href:'/trending'},
+  {label:'Акции', href:'/sale'},
+  {label:'Сдать на комиссию', href:'/consign'},
+].map((item) => (
             <a key={item.href} href={item.href} style={{display:'block', padding:'13px 20px', fontSize:'11px', fontWeight:400, letterSpacing:'2px', textTransform:'uppercase', textDecoration:'none', color:'#4A4540', borderBottom:'2px solid transparent', transition:'all .2s', whiteSpace:'nowrap'}}>
               {item.label}
             </a>
