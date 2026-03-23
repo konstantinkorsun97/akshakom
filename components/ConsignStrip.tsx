@@ -7,7 +7,7 @@ export default function ConsignStrip() {
           Сдайте золото или технику <em style={{fontStyle:'italic', color:'#D4AF57'}}>на комиссию</em>
         </div>
         <div style={{fontSize:'13px', color:'#666', fontWeight:300, marginTop:'6px'}}>
-          Бесплатная оценка · Вы сами устанавливаете цену · Деньги после продажи
+          Бесплатная оценка · Вы сами устанавливаете цену · Возможность получить часть суммы сразу
         </div>
       </div>
       <a href="/consign" style={{background:'#B8962E', color:'#fff', fontSize:'10px', letterSpacing:'3px', textTransform:'uppercase', padding:'13px 36px', fontFamily:'"Jost", sans-serif', fontWeight:400, textDecoration:'none', whiteSpace:'nowrap'}}>

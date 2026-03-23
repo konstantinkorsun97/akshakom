@@ -18,14 +18,15 @@ const items = [
     desc: 'Все дефекты указаны в карточке товара с фотографиями',
   },
   {
-    icon: (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#B8962E" strokeWidth="1.2">
-        <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-      </svg>
-    ),
-    title: 'Возврат в 3 дня',
-    desc: 'Если состояние не соответствует описанию — вернём деньги',
-  },
+  icon: (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#B8962E" strokeWidth="1.2">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+  ),
+  title: 'Работаем с 2025 года',
+  desc: 'Проверенный партнер на рынке комиссионной торговли Казахстана',
+},
   {
     icon: (
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#B8962E" strokeWidth="1.2">
