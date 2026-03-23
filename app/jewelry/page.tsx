@@ -188,7 +188,7 @@ export default function JewelryPage() {
 
         {/* ДИСКЛЕЙМЕР */}
         <div style={{marginTop:'24px', padding:'12px 20px', background:'#F0EDE8', border:'1px solid #E2D9CC', fontSize:'11px', color:'#888', fontWeight:300}}>
-          * Фотографии носят иллюстративный характер. Для фото конкретного изделия обращайтесь по тел. <span style={{color:'#B8962E'}}>+7 (7212) 00-00-00</span> или в WhatsApp.
+          * Фотографии носят иллюстративный характер. Для фото конкретного изделия обращайтесь по тел. <span style={{color:'#B8962E'}}>+7 771 270 7975</span> или в WhatsApp.
         </div>
       </div>
       <Footer />

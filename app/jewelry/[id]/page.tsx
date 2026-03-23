@@ -137,7 +137,7 @@ export default function ProductPage() {
             {/* КОНТАКТЫ */}
             <div style={{padding:'16px', background:'#fff', border:'1px solid #E2D9CC', fontSize:'12px', color:'#4A4540', fontWeight:300, lineHeight:1.7}}>
               Есть вопросы по изделию? Свяжитесь с нами:<br/>
-              <span style={{color:'#B8962E', fontWeight:400}}>+7 (7212) 00-00-00</span> · WhatsApp · Instagram
+              <span style={{color:'#B8962E', fontWeight:400}}>+7 771 270 7975</span> · WhatsApp · Instagram
             </div>
           </div>
         </div>

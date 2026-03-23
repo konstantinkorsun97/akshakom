@@ -33,7 +33,7 @@ export default function Footer() {
 
         <div>
           <div style={{fontSize:'10px', letterSpacing:'3px', textTransform:'uppercase', color:'#B8962E', marginBottom:'12px', fontWeight:400}}>Контакты</div>
-          {['+7 (7212) 00-00-00', 'WhatsApp', 'Instagram', 'г. Карагандa'].map((link) => (
+          {['+7 771 270 7975', 'WhatsApp', 'Instagram · @zoloto_karaganda_torgi', 'г. Карагандa'].map((link) => (
             <div key={link} style={{marginBottom:'8px'}}>
               <a href="#" style={{fontSize:'13px', color:'#555', textDecoration:'none', fontWeight:300}}>{link}</a>
             </div>

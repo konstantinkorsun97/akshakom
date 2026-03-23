@@ -41,20 +41,20 @@ export default function TechSection() {
         </div>
 
         <div style={{display:'flex', flexDirection:'column', gap:'16px'}}>
-          {[
-            { title: 'Честное описание', desc: 'Все дефекты и особенности техники будут подробно описаны' },
-            { title: 'Проверенные устройства', desc: 'Каждое устройство проходит проверку перед размещением' },
-            { title: 'Выгодные цены', desc: 'Комиссионные цены — значительно ниже рыночных' },
-            { title: 'Рассрочка Kaspi', desc: 'Возможность покупки в рассрочку через Kaspi банк' },
-          ].map(item => (
-            <div key={item.title} style={{padding:'16px 20px', border:'1px solid #2A2520', display:'flex', gap:'16px', alignItems:'flex-start'}}>
-              <div style={{width:'6px', height:'6px', borderRadius:'50%', background:'#B8962E', flexShrink:0, marginTop:'5px'}}></div>
-              <div>
-                <div style={{fontSize:'12px', fontWeight:500, letterSpacing:'1px', textTransform:'uppercase', color:'#ccc', marginBottom:'4px'}}>{item.title}</div>
-                <div style={{fontSize:'12px', color:'#666', fontWeight:300, lineHeight:1.5}}>{item.desc}</div>
-              </div>
-            </div>
-          ))}
+  {[
+    { title: 'Честное описание', desc: 'Все дефекты и особенности техники будут подробно описаны' },
+    { title: 'Проверенные устройства', desc: 'Каждое устройство проходит проверку перед размещением' },
+    { title: 'Выгодные цены', desc: 'Комиссионные цены — значительно ниже рыночных' },
+    { title: 'Только самовывоз', desc: 'Личная проверка перед покупкой в нашем магазине' },
+  ].map((item) => (
+    <div key={item.title} style={{padding:'16px 20px', border:'1px solid #2A2520', display:'flex', gap:'16px', alignItems:'flex-start'}}>
+      <div style={{width:'6px', height:'6px', borderRadius:'50%', background:'#B8962E', flexShrink:0, marginTop:'5px'}}></div>
+      <div>
+        <div style={{fontSize:'12px', fontWeight:500, letterSpacing:'1px', textTransform:'uppercase', color:'#ccc', marginBottom:'4px'}}>{item.title}</div>
+        <div style={{fontSize:'12px', color:'#666', fontWeight:300, lineHeight:1.5}}>{item.desc}</div>
+      </div>
+    </div>
+  ))}
         </div>
       </div>
     </section>

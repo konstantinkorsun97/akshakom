@@ -91,7 +91,7 @@ export default function GoldSection() {
 
       <div style={{marginTop:'16px', padding:'12px 20px', background:'#F0EDE8', border:'1px solid #E2D9CC', fontSize:'11px', color:'#888', fontWeight:300, lineHeight:1.6}}>
         * Фотографии носят иллюстративный характер. Для получения фото конкретного изделия обращайтесь по тел.{' '}
-        <span style={{color:'#B8962E'}}>+7 (7212) 00-00-00</span> или в WhatsApp.
+        <span style={{color:'#B8962E'}}>+7 771 270 7975</span> или в WhatsApp.
       </div>
     </section>
   )

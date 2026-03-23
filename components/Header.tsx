@@ -9,7 +9,7 @@ export default function Header() {
           Комиссионный магазин · Карагандa, Казахстан
         </span>
         <span style={{fontSize:'11px', color:'#D4AF57', fontWeight:300, letterSpacing:'1px'}}>
-          +7 (7212) 00-00-00 · WhatsApp · Instagram
+          +7 771 270 7975 · WhatsApp · @zoloto_karaganda_torgi
         </span>
       </div>
 

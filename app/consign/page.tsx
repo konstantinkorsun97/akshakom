@@ -14,7 +14,7 @@ export default function ConsignPage() {
             Как это работает и как<br/><em style={{fontStyle:'italic', color:'#D4AF57'}}>сдать на комиссию</em>
           </h1>
           <p style={{fontSize:'14px', color:'#777', fontWeight:300, lineHeight:1.8, maxWidth:'560px', margin:0}}>
-            АкшаКом — комиссионный магазин. Мы принимаем золотые украшения и технику на продажу от частных лиц. Вы получаете деньги только после продажи вашего товара.
+            АкшаКом — комиссионный магазин. Мы принимаем золотые украшения и технику на продажу от физических лиц. Клиент имеет возможность получить минимальную часть суммы сразу при заключении договора, а оставшуюся — после успешной реализации товара.
           </p>
         </div>
 
@@ -28,8 +28,8 @@ export default function ConsignPage() {
             {[
               {num:'01', title:'Выберите товар', desc:'Просматривайте каталог на сайте. Все дефекты и особенности честно указаны в карточке товара.'},
               {num:'02', title:'Свяжитесь с нами', desc:'Позвоните или напишите в WhatsApp. Мы покажем реальные фотографии конкретного изделия.'},
-              {num:'03', title:'Оплата', desc:'Оплата при получении наличными или переводом. Возможна рассрочка через Kaspi банк.'},
-              {num:'04', title:'Получение', desc:'Самовывоз из магазина в Карагандe или доставка по всему Казахстану.'},
+              {num:'03', title:'Оплата', desc:'Оплата при получении наличными или переводом. Консультант подскажет Вам адрес ближайшего отделения комиссионного магазина.'},
+              {num:'04', title:'Получение', desc:'Только самовывоз из магазина в Карагандe. Это позволяет вам лично проверить изделие перед покупкой.'},
             ].map(item => (
               <div key={item.num} style={{background:'#fff', padding:'36px 28px'}}>
                 <div style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'48px', fontWeight:300, color:'#E2D9CC', lineHeight:1, marginBottom:'16px'}}>{item.num}</div>
@@ -49,9 +49,9 @@ export default function ConsignPage() {
           <div style={{display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'2px', background:'#E2D9CC'}}>
             {[
               {num:'01', title:'Принесите изделие', desc:'Приходите в магазин с золотым украшением или техникой. Оценка бесплатная и ни к чему не обязывает.'},
-              {num:'02', title:'Оценка и описание', desc:'Мы проверяем пробу золота, взвешиваем, фиксируем все дефекты. Согласовываем цену с вами.'},
+              {num:'02', title:'Оценка и описание', desc:'Мы проверяем пробу золота, взвешиваем, фиксируем все дефекты. Согласовываем цену с вами. Заключается договор комиссии согласно законодательству РК.'},
               {num:'03', title:'Размещение', desc:'Товар фотографируется и размещается на сайте с честным описанием. Вы можете отозвать товар в любой момент.'},
-              {num:'04', title:'Выплата', desc:'После продажи мы выплачиваем вам деньги за вычетом комиссии магазина. Выплата в день продажи.'},
+              {num:'04', title:'Выплата', desc:'Выплата производится за вычетом комиссии магазина, а также любой суммы, полученной при заключении договора комиссии.'},
             ].map(item => (
               <div key={item.num} style={{background:'#F7F4EF', padding:'36px 28px'}}>
                 <div style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'48px', fontWeight:300, color:'#E2D9CC', lineHeight:1, marginBottom:'16px'}}>{item.num}</div>
@@ -111,10 +111,10 @@ export default function ConsignPage() {
             <div style={{fontSize:'13px', color:'#666', fontWeight:300}}>Приходите к нам или позвоните — оценим бесплатно</div>
           </div>
           <div style={{display:'flex', gap:'16px', flexShrink:0}}>
-            <a href="tel:+77212000000" style={{background:'#B8962E', color:'#fff', padding:'14px 32px', fontSize:'11px', letterSpacing:'2px', textTransform:'uppercase', textDecoration:'none', fontFamily:'"Jost", sans-serif'}}>
+            <a href="tel:+7 771 270 7975" style={{background:'#B8962E', color:'#fff', padding:'14px 32px', fontSize:'11px', letterSpacing:'2px', textTransform:'uppercase', textDecoration:'none', fontFamily:'"Jost", sans-serif'}}>
               Позвонить
             </a>
-            <a href="https://wa.me/77212000000" style={{border:'1px solid #2A2520', color:'#888', padding:'14px 32px', fontSize:'11px', letterSpacing:'2px', textTransform:'uppercase', textDecoration:'none', fontFamily:'"Jost", sans-serif'}}>
+            <a href="https://wa.me/77712707975" style={{border:'1px solid #2A2520', color:'#888', padding:'14px 32px', fontSize:'11px', letterSpacing:'2px', textTransform:'uppercase', textDecoration:'none', fontFamily:'"Jost", sans-serif'}}>
               WhatsApp
             </a>
           </div>

@@ -11,7 +11,7 @@ export default function ConsignStrip() {
         </div>
       </div>
       <a href="/consign" style={{background:'#B8962E', color:'#fff', fontSize:'10px', letterSpacing:'3px', textTransform:'uppercase', padding:'13px 36px', fontFamily:'"Jost", sans-serif', fontWeight:400, textDecoration:'none', whiteSpace:'nowrap'}}>
-        Узнать условия →
+        Узнать условия → +7 771 270 7975
       </a>
     </div>
   )
