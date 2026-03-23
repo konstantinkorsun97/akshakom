@@ -18,12 +18,14 @@ export default function Header() {
         <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 40px', height:'68px'}}>
           
           {/* LOGO */}
-          <a href="/" style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'26px', fontWeight:600, letterSpacing:'3px', color:'#1A1612', textDecoration:'none', display:'flex', flexDirection:'column', lineHeight:1}}>
-            АКША<span style={{color:'#B8962E'}}>КОМ</span>
-            <span style={{fontSize:'9px', letterSpacing:'4px', textTransform:'uppercase', color:'#4A4540', fontFamily:'"Jost", sans-serif', fontWeight:300, marginTop:'3px'}}>
-              Комиссионный магазин
-            </span>
-          </a>
+          <a href="/" style={{textDecoration:'none', display:'flex', flexDirection:'column', lineHeight:1}}>
+  <span style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'26px', fontWeight:600, letterSpacing:'3px', color:'#1A1612', whiteSpace:'nowrap'}}>
+    АКША<span style={{color:'#B8962E'}}>КОМ</span>
+  </span>
+  <span style={{fontSize:'9px', letterSpacing:'4px', textTransform:'uppercase', color:'#4A4540', fontFamily:'"Jost", sans-serif', fontWeight:300, marginTop:'3px'}}>
+    Комиссионный магазин
+  </span>
+</a>
 
           {/* SEARCH */}
           <div style={{flex:1, maxWidth:'400px', margin:'0 40px', position:'relative'}}>
