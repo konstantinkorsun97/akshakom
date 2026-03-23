@@ -1,6 +1,10 @@
 'use client'
+import { useLang } from '@/lib/LangContext'
+import { t } from '@/lib/translations'
 
-export default function Header() {
+ export default function Header() {
+  const { lang, setLang } = useLang()
+  const tr = t[lang]
   return (
     <>
       {/* TOP BAR */}
@@ -34,7 +38,27 @@ export default function Header() {
             </svg>
             <input type="text" placeholder="Поиск: кольцо 585, iPhone 14..." style={{width:'100%', padding:'9px 16px 9px 38px', border:'1px solid #E2D9CC', background:'#F7F4EF', fontSize:'13px', fontFamily:'"Jost", sans-serif', fontWeight:300, color:'#1A1612', outline:'none'}} />
           </div>
-
+{/* ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА */}
+<div style={{display:'flex', marginRight:'16px'}}>
+  {(['ru','kz'] as const).map((l, i) => (
+    <button key={l} onClick={() => setLang(l)}
+      style={{
+        padding:'5px 12px',
+        fontSize:'11px',
+        letterSpacing:'1px',
+        textTransform:'uppercase',
+        background: lang === l ? '#1A1612' : 'transparent',
+        color: lang === l ? '#B8962E' : '#888',
+        border:'1px solid #E2D9CC',
+        borderRight: i === 0 ? 'none' : '1px solid #E2D9CC',
+        cursor:'pointer',
+        fontFamily:'"Jost", sans-serif',
+        fontWeight: lang === l ? 500 : 300
+      }}>
+      {l === 'ru' ? 'РУ' : 'ҚАЗ'}
+    </button>
+  ))}
+</div>
           {/* ICONS */}
           <div style={{display:'flex', gap:'24px', alignItems:'center'}}>
             <button style={{background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'3px', color:'#4A4540', fontSize:'11px', fontFamily:'"Jost", sans-serif', fontWeight:300, letterSpacing:'1px'}}>
