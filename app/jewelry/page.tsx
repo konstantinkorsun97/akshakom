@@ -11,8 +11,22 @@ export default function JewelryPage() {
   const { lang } = useLang()
   const tr = t[lang]
 
-  const CONDITIONS = [tr.jewelry_cond_all, 'Отличное', 'Хорошее', 'Удовлетворительное', 'Дефект']
-  const PROBAS = ['Все', '375', '500', '585', '750', '999']
+  // value — то что уходит в БД (всегда русское), label — то что видит пользователь
+  const CONDITIONS = [
+    { value: 'Все', label: tr.jewelry_cond_all },
+    { value: 'Отличное', label: tr.cond_excellent },
+    { value: 'Хорошее', label: tr.cond_good },
+    { value: 'Удовлетворительное', label: tr.cond_fair },
+    { value: 'Дефект', label: tr.cond_defect },
+  ]
+  const PROBAS = [
+    { value: 'Все', label: tr.jewelry_cond_all },
+    { value: '375', label: '375' },
+    { value: '500', label: '500' },
+    { value: '585', label: '585' },
+    { value: '750', label: '750' },
+    { value: '999', label: '999' },
+  ]
   const SORT_OPTIONS = [
     { label: tr.jewelry_sort_new, value: 'new' },
     { label: tr.jewelry_sort_asc, value: 'price_asc' },
@@ -23,7 +37,7 @@ export default function JewelryPage() {
   const [photos, setPhotos] = useState<Record<string, string[]>>({})
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-  const [condition, setCondition] = useState(CONDITIONS[0])
+  const [condition, setCondition] = useState('Все')
   const [proba, setProba] = useState('Все')
   const [sort, setSort] = useState('new')
   const [page, setPage] = useState(0)
@@ -34,7 +48,7 @@ export default function JewelryPage() {
       setLoading(true)
       let query = supabase.from('products').select('*').eq('is_active', true)
 
-      if (condition !== CONDITIONS[0]) query = query.eq('condition', condition)
+      if (condition !== 'Все') query = query.eq('condition', condition)
       if (proba !== 'Все') query = query.eq('proba', parseInt(proba))
       if (sort === 'new') query = query.order('open_date', { ascending: false })
       if (sort === 'price_asc') query = query.order('estimate_sum', { ascending: true })
@@ -99,9 +113,9 @@ export default function JewelryPage() {
             <div style={{fontSize:'10px', letterSpacing:'2px', textTransform:'uppercase', color:'#B8962E', marginBottom:'6px', fontWeight:400}}>{tr.jewelry_filter_condition}</div>
             <div style={{display:'flex'}}>
               {CONDITIONS.map((c, i) => (
-                <button key={c} onClick={() => { setCondition(c); setPage(0) }}
-                  style={{padding:'7px 14px', fontSize:'11px', letterSpacing:'1px', background: condition === c ? '#1A1612' : 'transparent', color: condition === c ? '#fff' : '#4A4540', border:'1px solid #E2D9CC', borderRight: i < CONDITIONS.length-1 ? 'none' : '1px solid #E2D9CC', cursor:'pointer', fontFamily:'"Jost", sans-serif', whiteSpace:'nowrap'}}>
-                  {c}
+                <button key={c.value} onClick={() => { setCondition(c.value); setPage(0) }}
+                  style={{padding:'7px 14px', fontSize:'11px', letterSpacing:'1px', background: condition === c.value ? '#1A1612' : 'transparent', color: condition === c.value ? '#fff' : '#4A4540', border:'1px solid #E2D9CC', borderRight: i < CONDITIONS.length-1 ? 'none' : '1px solid #E2D9CC', cursor:'pointer', fontFamily:'"Jost", sans-serif', whiteSpace:'nowrap'}}>
+                  {c.label}
                 </button>
               ))}
             </div>
@@ -111,9 +125,9 @@ export default function JewelryPage() {
             <div style={{fontSize:'10px', letterSpacing:'2px', textTransform:'uppercase', color:'#B8962E', marginBottom:'6px', fontWeight:400}}>{tr.jewelry_filter_proba}</div>
             <div style={{display:'flex'}}>
               {PROBAS.map((p, i) => (
-                <button key={p} onClick={() => { setProba(p); setPage(0) }}
-                  style={{padding:'7px 12px', fontSize:'11px', background: proba === p ? '#1A1612' : 'transparent', color: proba === p ? '#fff' : '#4A4540', border:'1px solid #E2D9CC', borderRight: i < PROBAS.length-1 ? 'none' : '1px solid #E2D9CC', cursor:'pointer', fontFamily:'"Jost", sans-serif'}}>
-                  {p}
+                <button key={p.value} onClick={() => { setProba(p.value); setPage(0) }}
+                  style={{padding:'7px 12px', fontSize:'11px', background: proba === p.value ? '#1A1612' : 'transparent', color: proba === p.value ? '#fff' : '#4A4540', border:'1px solid #E2D9CC', borderRight: i < PROBAS.length-1 ? 'none' : '1px solid #E2D9CC', cursor:'pointer', fontFamily:'"Jost", sans-serif'}}>
+                  {p.label}
                 </button>
               ))}
             </div>
