@@ -5,6 +5,7 @@ import { getConditionStyle, getCategoryForProduct, getProductImage } from '@/lib
 import { useLang } from '@/lib/LangContext'
 import { t } from '@/lib/translations'
 import { useIsMobile } from '@/lib/useIsMobile'
+import { useFavorites } from '@/lib/FavoritesContext'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
@@ -12,6 +13,7 @@ export default function JewelryPage() {
   const { lang } = useLang()
   const tr = t[lang]
   const isMobile = useIsMobile()
+  const { toggleItem, isInFavorites } = useFavorites()
 
   const CONDITIONS = [
     { value: 'Все', label: tr.jewelry_cond_all },
@@ -80,7 +82,6 @@ export default function JewelryPage() {
       <Header />
       <div style={{ background: '#F7F4EF', minHeight: '100vh', padding: isMobile ? '20px 16px' : '40px', overflowX: 'hidden' }}>
 
-        {/* ЗАГОЛОВОК */}
         <div style={{ marginBottom: '24px' }}>
           <div style={{ fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: '#B8962E', marginBottom: '8px' }}>{tr.jewelry_catalog_label}</div>
           <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: isMobile ? '28px' : '42px', fontWeight: 300, color: '#1A1612', margin: 0 }}>
@@ -90,7 +91,6 @@ export default function JewelryPage() {
 
         {/* ФИЛЬТРЫ */}
         <div style={{ background: '#fff', padding: isMobile ? '14px' : '20px 24px', marginBottom: '16px', border: '1px solid #E2D9CC', display: 'flex', gap: '12px', flexDirection: 'column' }}>
-          {/* ПОИСК */}
           <form onSubmit={e => { e.preventDefault(); setPage(0) }} style={{ position: 'relative' }}>
             <svg style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '15px', height: '15px', stroke: '#4A4540', fill: 'none', strokeWidth: 1.5 }} viewBox="0 0 24 24">
               <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
@@ -99,9 +99,7 @@ export default function JewelryPage() {
               placeholder={tr.jewelry_search_placeholder}
               style={{ width: '100%', padding: '9px 16px 9px 38px', border: '1px solid #E2D9CC', background: '#F7F4EF', fontSize: '13px', fontFamily: '"Jost", sans-serif', outline: 'none', boxSizing: 'border-box' }} />
           </form>
-
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-            {/* СОСТОЯНИЕ */}
             <div>
               <div style={{ fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#B8962E', marginBottom: '6px', fontWeight: 400 }}>{tr.jewelry_filter_condition}</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px' }}>
@@ -113,8 +111,6 @@ export default function JewelryPage() {
                 ))}
               </div>
             </div>
-
-            {/* ПРОБА */}
             <div>
               <div style={{ fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#B8962E', marginBottom: '6px', fontWeight: 400 }}>{tr.jewelry_filter_proba}</div>
               <div style={{ display: 'flex', gap: '2px' }}>
@@ -126,8 +122,6 @@ export default function JewelryPage() {
                 ))}
               </div>
             </div>
-
-            {/* СОРТИРОВКА */}
             <div>
               <div style={{ fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#B8962E', marginBottom: '6px', fontWeight: 400 }}>{tr.jewelry_filter_sort}</div>
               <select value={sort} onChange={e => { setSort(e.target.value); setPage(0) }}
@@ -150,14 +144,25 @@ export default function JewelryPage() {
               const cat = getCategoryForProduct(p.name_display)
               const catPhotos = photos[cat] || photos['default'] || []
               const img = getProductImage(catPhotos, p.id)
+              const inFav = isInFavorites(String(p.id))
               return (
-                <a key={p.id} href={`/jewelry/${p.id}`} style={{ background: '#fff', display: 'flex', flexDirection: 'column', textDecoration: 'none', minWidth: 0 }}>
+                <div key={p.id} style={{ background: '#fff', display: 'flex', flexDirection: 'column', textDecoration: 'none', minWidth: 0 }}>
+                  {/* ФОТО */}
                   <div style={{ height: isMobile ? '150px' : '220px', position: 'relative', overflow: 'hidden', background: '#F9F6F0' }}>
-                    {img && <img src={img} alt={p.name_display} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                    <a href={`/jewelry/${p.id}`} style={{ display: 'block', height: '100%' }}>
+                      {img && <img src={img} alt={p.name_display} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                    </a>
                     <div style={{ position: 'absolute', top: '8px', left: '8px', background: '#B8962E', color: '#fff', fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', padding: '2px 6px', fontWeight: 500 }}>{p.proba}°</div>
+                    {/* КНОПКА ИЗБРАННОГО */}
+                    <button
+                      onClick={() => toggleItem({ id: String(p.id), article: p.article, name: p.name_display, price: p.estimate_sum, proba: p.proba })}
+                      style={{ position: 'absolute', top: '8px', right: '8px', background: inFav ? 'rgba(192,57,43,0.9)' : 'rgba(255,255,255,0.85)', border: 'none', cursor: 'pointer', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', transition: 'all 0.2s' }}>
+                      {inFav ? '♥' : '♡'}
+                    </button>
                     <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(26,22,18,0.65)', color: 'rgba(255,255,255,0.7)', fontSize: '8px', padding: '3px 6px', textAlign: 'center' }}>{tr.photo_note}</div>
                   </div>
-                  <div style={{ padding: isMobile ? '8px 10px' : '14px 16px 8px', flex: 1, minWidth: 0 }}>
+                  {/* ИНФО */}
+                  <a href={`/jewelry/${p.id}`} style={{ textDecoration: 'none', padding: isMobile ? '8px 10px' : '14px 16px 8px', flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
                     <div style={{ fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', color: '#B8962E', marginBottom: '2px' }}>{tr.article} {p.article}</div>
                     <div style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: isMobile ? '14px' : '17px', fontWeight: 400, color: '#1A1612', marginBottom: '4px', lineHeight: 1.2 }}>{p.name_display}</div>
                     {p.defects && <div style={{ fontSize: '10px', color: '#854F0B', fontWeight: 300, marginBottom: '4px' }}>{p.defects}</div>}
@@ -167,8 +172,8 @@ export default function JewelryPage() {
                       </span>
                     </div>
                     <div style={{ fontSize: isMobile ? '13px' : '16px', fontWeight: 500, color: '#1A1612' }}>{p.estimate_sum?.toLocaleString('ru-RU')} ₸</div>
-                  </div>
-                </a>
+                  </a>
+                </div>
               )
             })}
           </div>
