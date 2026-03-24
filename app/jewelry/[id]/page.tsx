@@ -7,6 +7,7 @@ import { useLang } from '@/lib/LangContext'
 import { t } from '@/lib/translations'
 import { useIsMobile } from '@/lib/useIsMobile'
 import { useCart } from '@/lib/CartContext'
+import { useFavorites } from '@/lib/FavoritesContext'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
@@ -15,13 +16,13 @@ export default function ProductPage() {
   const { lang } = useLang()
   const tr = t[lang]
   const isMobile = useIsMobile()
-  const { addItem, items } = useCart()
+  const { addItem: addToCart, items: cartItems } = useCart()
+  const { toggleItem, isInFavorites } = useFavorites()
+
   const [product, setProduct] = useState<Product | null>(null)
   const [img, setImg] = useState('')
   const [loading, setLoading] = useState(true)
   const [added, setAdded] = useState(false)
-
-  const inCart = product ? items.some(i => i.id === String(product.id)) : false
 
   useEffect(() => {
     async function load() {
@@ -38,17 +39,19 @@ export default function ProductPage() {
     load()
   }, [id])
 
+  const inCart = product ? cartItems.some(i => i.id === String(product.id)) : false
+  const inFavorites = product ? isInFavorites(String(product.id)) : false
+
   function handleAddToCart() {
     if (!product || inCart) return
-    addItem({
-      id: String(product.id),
-      article: product.article || '',
-      name: product.name_display,
-      price: product.estimate_sum || 0,
-      proba: product.proba || 0,
-    })
+    addToCart({ id: String(product.id), article: product.article, name: product.name_display, price: product.estimate_sum, proba: product.proba })
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
+  }
+
+  function handleToggleFavorite() {
+    if (!product) return
+    toggleItem({ id: String(product.id), article: product.article, name: product.name_display, price: product.estimate_sum, proba: product.proba })
   }
 
   if (loading) return (
@@ -68,11 +71,9 @@ export default function ProductPage() {
   )
 
   const cond = getConditionStyle(product.condition)
-  const btnLabel = inCart
+  const cartBtnLabel = inCart
     ? (lang === 'ru' ? '✓ В корзине' : '✓ Себетте')
-    : added
-      ? (lang === 'ru' ? '✓ Добавлено!' : '✓ Қосылды!')
-      : tr.product_btn_cart
+    : added ? (lang === 'ru' ? '✓ Добавлено!' : '✓ Қосылды!') : tr.product_btn_cart
 
   return (
     <>
@@ -147,25 +148,30 @@ export default function ProductPage() {
             </div>
 
             {/* КНОПКИ */}
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
-              <button onClick={handleAddToCart} style={{
-                flex: 1, color: '#fff', border: 'none', padding: '14px',
-                fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase',
-                cursor: inCart ? 'default' : 'pointer', fontFamily: '"Jost", sans-serif',
-                background: inCart || added ? '#4A7C59' : '#1A1612',
-                transition: 'background 0.3s',
-              }}>
-                {btnLabel}
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+              <button onClick={handleAddToCart}
+                style={{ flex: 1, background: inCart ? '#4A4540' : added ? '#2d7a3a' : '#1A1612', color: '#fff', border: 'none', padding: '14px', fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', cursor: inCart ? 'default' : 'pointer', fontFamily: '"Jost", sans-serif', transition: 'background 0.3s' }}>
+                {cartBtnLabel}
               </button>
-              <button style={{ padding: '14px 18px', background: 'transparent', border: '1px solid #E2D9CC', cursor: 'pointer', color: '#4A4540', fontSize: '18px' }}>♡</button>
+              <button onClick={handleToggleFavorite}
+                style={{ padding: '14px 18px', background: inFavorites ? '#FFF0F0' : 'transparent', border: `1px solid ${inFavorites ? '#E8A0A0' : '#E2D9CC'}`, cursor: 'pointer', color: inFavorites ? '#C0392B' : '#4A4540', fontSize: '18px', transition: 'all 0.2s' }}>
+                {inFavorites ? '♥' : '♡'}
+              </button>
             </div>
 
-            {/* ССЫЛКА НА КОРЗИНУ */}
-            {inCart && (
-              <a href="/cart" style={{ display: 'block', textAlign: 'center', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#B8962E', textDecoration: 'none', marginBottom: '16px', fontFamily: '"Jost", sans-serif' }}>
-                {lang === 'ru' ? 'Перейти в корзину →' : 'Себетке өту →'}
-              </a>
-            )}
+            {/* ССЫЛКИ */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+              {inCart && (
+                <a href="/cart" style={{ display: 'block', textAlign: 'center', padding: '12px', border: '1px solid #B8962E', color: '#B8962E', textDecoration: 'none', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', fontFamily: '"Jost", sans-serif' }}>
+                  {lang === 'ru' ? 'Перейти в корзину →' : 'Себетке өту →'}
+                </a>
+              )}
+              {inFavorites && (
+                <a href="/favorites" style={{ display: 'block', textAlign: 'center', padding: '12px', border: '1px solid #E8A0A0', color: '#C0392B', textDecoration: 'none', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', fontFamily: '"Jost", sans-serif' }}>
+                  {lang === 'ru' ? 'Перейти в избранное →' : 'Таңдаулыға өту →'}
+                </a>
+              )}
+            </div>
 
             {/* КОНТАКТЫ */}
             <div style={{ padding: '14px', background: '#fff', border: '1px solid #E2D9CC', fontSize: '12px', color: '#4A4540', fontWeight: 300, lineHeight: 1.7 }}>

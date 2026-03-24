@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { LangProvider } from '@/lib/LangContext';
 import { CartProvider } from '@/lib/CartContext';
+import { FavoritesProvider } from '@/lib/FavoritesContext';
 
 export const metadata: Metadata = {
   title: 'АкшаКом — Комиссионный магазин',
@@ -18,7 +19,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <LangProvider>
           <CartProvider>
-            {children}
+            <FavoritesProvider>
+              {children}
+            </FavoritesProvider>
           </CartProvider>
         </LangProvider>
       </body>

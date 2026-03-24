@@ -4,12 +4,14 @@ import { useLang } from '@/lib/LangContext'
 import { t } from '@/lib/translations'
 import { useIsMobile } from '@/lib/useIsMobile'
 import { useCart } from '@/lib/CartContext'
+import { useFavorites } from '@/lib/FavoritesContext'
 
 export default function Header() {
   const { lang, setLang } = useLang()
   const tr = t[lang]
   const isMobile = useIsMobile()
   const { totalCount } = useCart()
+  const { totalCount: favCount } = useFavorites()
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navItems = [
@@ -92,12 +94,15 @@ export default function Header() {
                   </svg>
                   {tr.login}
                 </button>
-                <button style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: '#4A4540', fontSize: '11px', fontFamily: '"Jost", sans-serif', fontWeight: 300, letterSpacing: '1px' }}>
+                <a href="/favorites" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: '#4A4540', fontSize: '11px', fontFamily: '"Jost", sans-serif', fontWeight: 300, letterSpacing: '1px', position: 'relative' }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                   </svg>
                   {tr.favorites}
-                </button>
+                  {favCount > 0 && (
+                    <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#C0392B', color: '#fff', fontSize: '9px', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500 }}>{favCount}</span>
+                  )}
+                </a>
                 <a href="/cart" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: '#4A4540', fontSize: '11px', fontFamily: '"Jost", sans-serif', fontWeight: 300, letterSpacing: '1px', position: 'relative' }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
