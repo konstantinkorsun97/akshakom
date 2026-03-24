@@ -2,98 +2,107 @@
 import { useLang } from '@/lib/LangContext'
 import { t } from '@/lib/translations'
 
- export default function Header() {
+export default function Header() {
   const { lang, setLang } = useLang()
   const tr = t[lang]
+
+  const navItems = [
+    { label: tr.nav_home, href: '/' },
+    { label: tr.nav_jewelry, href: '/jewelry' },
+    { label: tr.nav_tech, href: '/tech' },
+    { label: tr.nav_trending, href: '/trending' },
+    { label: tr.nav_sale, href: '/sale' },
+    { label: tr.nav_consign, href: '/consign' },
+  ]
+
   return (
     <>
       {/* TOP BAR */}
-      <div style={{background:'#1A1612', padding:'8px 40px', display:'flex', justifyContent:'space-between'}}>
-        <span style={{fontSize:'11px', color:'#666', fontWeight:300, letterSpacing:'1px'}}>
-          Комиссионный магазин · Карагандa, Казахстан
+      <div style={{ background: '#1A1612', padding: '8px 40px', display: 'flex', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: '11px', color: '#666', fontWeight: 300, letterSpacing: '1px' }}>
+          {tr.topbar_left}
         </span>
-        <span style={{fontSize:'11px', color:'#D4AF57', fontWeight:300, letterSpacing:'1px'}}>
+        <span style={{ fontSize: '11px', color: '#D4AF57', fontWeight: 300, letterSpacing: '1px' }}>
           +7 771 270 7975 · WhatsApp · @zoloto_karaganda_torgi
         </span>
       </div>
 
       {/* HEADER */}
-      <header style={{background:'#fff', borderBottom:'1px solid #E2D9CC', position:'sticky', top:0, zIndex:100}}>
-        <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 40px', height:'68px'}}>
-          
+      <header style={{ background: '#fff', borderBottom: '1px solid #E2D9CC', position: 'sticky', top: 0, zIndex: 100 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px', height: '68px' }}>
+
           {/* LOGO */}
-          <a href="/" style={{textDecoration:'none', display:'flex', flexDirection:'column', lineHeight:1}}>
-  <span style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'26px', fontWeight:600, letterSpacing:'3px', color:'#1A1612', whiteSpace:'nowrap'}}>
-    АКША<span style={{color:'#B8962E'}}>КОМ</span>
-  </span>
-  <span style={{fontSize:'9px', letterSpacing:'4px', textTransform:'uppercase', color:'#4A4540', fontFamily:'"Jost", sans-serif', fontWeight:300, marginTop:'3px'}}>
-    Комиссионный магазин
-  </span>
-</a>
+          <a href="/" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+            <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '26px', fontWeight: 600, letterSpacing: '3px', color: '#1A1612', whiteSpace: 'nowrap' }}>
+              АКША<span style={{ color: '#B8962E' }}>КОМ</span>
+            </span>
+            <span style={{ fontSize: '9px', letterSpacing: '4px', textTransform: 'uppercase', color: '#4A4540', fontFamily: '"Jost", sans-serif', fontWeight: 300, marginTop: '3px' }}>
+              {tr.topbar_left.split('·')[0].trim()}
+            </span>
+          </a>
 
           {/* SEARCH */}
-          <div style={{flex:1, maxWidth:'400px', margin:'0 40px', position:'relative'}}>
-            <svg style={{position:'absolute', left:'12px', top:'50%', transform:'translateY(-50%)', width:'15px', height:'15px', stroke:'#4A4540', fill:'none', strokeWidth:1.5}} viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          <div style={{ flex: 1, maxWidth: '400px', margin: '0 40px', position: 'relative' }}>
+            <svg style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '15px', height: '15px', stroke: '#4A4540', fill: 'none', strokeWidth: 1.5 }} viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
             </svg>
-            <input type="text" placeholder="Поиск: кольцо 585, iPhone 14..." style={{width:'100%', padding:'9px 16px 9px 38px', border:'1px solid #E2D9CC', background:'#F7F4EF', fontSize:'13px', fontFamily:'"Jost", sans-serif', fontWeight:300, color:'#1A1612', outline:'none'}} />
+            <input
+              type="text"
+              placeholder={tr.search_placeholder}
+              style={{ width: '100%', padding: '9px 16px 9px 38px', border: '1px solid #E2D9CC', background: '#F7F4EF', fontSize: '13px', fontFamily: '"Jost", sans-serif', fontWeight: 300, color: '#1A1612', outline: 'none' }}
+            />
           </div>
-{/* ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА */}
-<div style={{display:'flex', marginRight:'16px'}}>
-  {(['ru','kz'] as const).map((l, i) => (
-    <button key={l} onClick={() => setLang(l)}
-      style={{
-        padding:'5px 12px',
-        fontSize:'11px',
-        letterSpacing:'1px',
-        textTransform:'uppercase',
-        background: lang === l ? '#1A1612' : 'transparent',
-        color: lang === l ? '#B8962E' : '#888',
-        border:'1px solid #E2D9CC',
-        borderRight: i === 0 ? 'none' : '1px solid #E2D9CC',
-        cursor:'pointer',
-        fontFamily:'"Jost", sans-serif',
-        fontWeight: lang === l ? 500 : 300
-      }}>
-      {l === 'ru' ? 'РУ' : 'ҚАЗ'}
-    </button>
-  ))}
-</div>
+
+          {/* ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА */}
+          <div style={{ display: 'flex', marginRight: '16px' }}>
+            {(['ru', 'kz'] as const).map((l, i) => (
+              <button key={l} onClick={() => setLang(l)}
+                style={{
+                  padding: '5px 12px',
+                  fontSize: '11px',
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
+                  background: lang === l ? '#1A1612' : 'transparent',
+                  color: lang === l ? '#B8962E' : '#888',
+                  border: '1px solid #E2D9CC',
+                  borderRight: i === 0 ? 'none' : '1px solid #E2D9CC',
+                  cursor: 'pointer',
+                  fontFamily: '"Jost", sans-serif',
+                  fontWeight: lang === l ? 500 : 300
+                }}>
+                {l === 'ru' ? 'РУ' : 'ҚАЗ'}
+              </button>
+            ))}
+          </div>
+
           {/* ICONS */}
-          <div style={{display:'flex', gap:'24px', alignItems:'center'}}>
-            <button style={{background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'3px', color:'#4A4540', fontSize:'11px', fontFamily:'"Jost", sans-serif', fontWeight:300, letterSpacing:'1px'}}>
+          <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+            <button style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: '#4A4540', fontSize: '11px', fontFamily: '"Jost", sans-serif', fontWeight: 300, letterSpacing: '1px' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
               </svg>
-              Войти
+              {tr.login}
             </button>
-            <button style={{background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'3px', color:'#4A4540', fontSize:'11px', fontFamily:'"Jost", sans-serif', fontWeight:300, letterSpacing:'1px'}}>
+            <button style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: '#4A4540', fontSize: '11px', fontFamily: '"Jost", sans-serif', fontWeight: 300, letterSpacing: '1px' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
-              Избранное
+              {tr.favorites}
             </button>
-            <button style={{background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'3px', color:'#4A4540', fontSize:'11px', fontFamily:'"Jost", sans-serif', fontWeight:300, letterSpacing:'1px', position:'relative'}}>
+            <button style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: '#4A4540', fontSize: '11px', fontFamily: '"Jost", sans-serif', fontWeight: 300, letterSpacing: '1px', position: 'relative' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
               </svg>
-              Корзина
-              <span style={{position:'absolute', top:'-4px', right:'-4px', background:'#B8962E', color:'#fff', fontSize:'9px', width:'16px', height:'16px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:500}}>0</span>
+              {tr.cart}
+              <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#B8962E', color: '#fff', fontSize: '9px', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500 }}>0</span>
             </button>
           </div>
         </div>
 
         {/* NAV */}
-        <nav style={{borderTop:'1px solid #E2D9CC', display:'flex', justifyContent:'center'}}>
-          {[
-  {label:'Главная', href:'/'},
-  {label:'Украшения из золота', href:'/jewelry'},
-  {label:'Техника', href:'/tech'},
-  {label:'В тренде', href:'/trending'},
-  {label:'Акции', href:'/sale'},
-  {label:'Сдать на комиссию', href:'/consign'},
-].map((item) => (
-            <a key={item.href} href={item.href} style={{display:'block', padding:'13px 20px', fontSize:'11px', fontWeight:400, letterSpacing:'2px', textTransform:'uppercase', textDecoration:'none', color:'#4A4540', borderBottom:'2px solid transparent', transition:'all .2s', whiteSpace:'nowrap'}}>
+        <nav style={{ borderTop: '1px solid #E2D9CC', display: 'flex', justifyContent: 'center' }}>
+          {navItems.map((item) => (
+            <a key={item.href} href={item.href} style={{ display: 'block', padding: '13px 20px', fontSize: '11px', fontWeight: 400, letterSpacing: '2px', textTransform: 'uppercase', textDecoration: 'none', color: '#4A4540', borderBottom: '2px solid transparent', transition: 'all .2s', whiteSpace: 'nowrap' }}>
               {item.label}
             </a>
           ))}
