@@ -3,11 +3,13 @@ import { useState } from 'react'
 import { useLang } from '@/lib/LangContext'
 import { t } from '@/lib/translations'
 import { useIsMobile } from '@/lib/useIsMobile'
+import { useCart } from '@/lib/CartContext'
 
 export default function Header() {
   const { lang, setLang } = useLang()
   const tr = t[lang]
   const isMobile = useIsMobile()
+  const { totalCount } = useCart()
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navItems = [
@@ -96,24 +98,24 @@ export default function Header() {
                   </svg>
                   {tr.favorites}
                 </button>
-                <button style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: '#4A4540', fontSize: '11px', fontFamily: '"Jost", sans-serif', fontWeight: 300, letterSpacing: '1px', position: 'relative' }}>
+                <a href="/cart" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: '#4A4540', fontSize: '11px', fontFamily: '"Jost", sans-serif', fontWeight: 300, letterSpacing: '1px', position: 'relative' }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                   </svg>
                   {tr.cart}
-                  <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#B8962E', color: '#fff', fontSize: '9px', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500 }}>0</span>
-                </button>
+                  <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#B8962E', color: '#fff', fontSize: '9px', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500 }}>{totalCount}</span>
+                </a>
               </div>
             )}
 
             {/* КОРЗИНА — только мобильный */}
             {isMobile && (
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#4A4540', position: 'relative' }}>
+              <a href="/cart" style={{ textDecoration: 'none', color: '#4A4540', position: 'relative', display: 'flex' }}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                 </svg>
-                <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#B8962E', color: '#fff', fontSize: '9px', width: '15px', height: '15px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500 }}>0</span>
-              </button>
+                <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#B8962E', color: '#fff', fontSize: '9px', width: '15px', height: '15px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500 }}>{totalCount}</span>
+              </a>
             )}
 
             {/* БУРГЕР — только мобильный */}

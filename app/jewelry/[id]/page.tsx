@@ -6,6 +6,7 @@ import { getConditionStyle, getCategoryForProduct, getProductImage } from '@/lib
 import { useLang } from '@/lib/LangContext'
 import { t } from '@/lib/translations'
 import { useIsMobile } from '@/lib/useIsMobile'
+import { useCart } from '@/lib/CartContext'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
@@ -14,9 +15,13 @@ export default function ProductPage() {
   const { lang } = useLang()
   const tr = t[lang]
   const isMobile = useIsMobile()
+  const { addItem, items } = useCart()
   const [product, setProduct] = useState<Product | null>(null)
   const [img, setImg] = useState('')
   const [loading, setLoading] = useState(true)
+  const [added, setAdded] = useState(false)
+
+  const inCart = product ? items.some(i => i.id === String(product.id)) : false
 
   useEffect(() => {
     async function load() {
@@ -32,6 +37,19 @@ export default function ProductPage() {
     }
     load()
   }, [id])
+
+  function handleAddToCart() {
+    if (!product || inCart) return
+    addItem({
+      id: String(product.id),
+      article: product.article || '',
+      name: product.name_display,
+      price: product.estimate_sum || 0,
+      proba: product.proba || 0,
+    })
+    setAdded(true)
+    setTimeout(() => setAdded(false), 2000)
+  }
 
   if (loading) return (
     <>
@@ -50,6 +68,11 @@ export default function ProductPage() {
   )
 
   const cond = getConditionStyle(product.condition)
+  const btnLabel = inCart
+    ? (lang === 'ru' ? '✓ В корзине' : '✓ Себетте')
+    : added
+      ? (lang === 'ru' ? '✓ Добавлено!' : '✓ Қосылды!')
+      : tr.product_btn_cart
 
   return (
     <>
@@ -124,12 +147,25 @@ export default function ProductPage() {
             </div>
 
             {/* КНОПКИ */}
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
-              <button style={{ flex: 1, background: '#1A1612', color: '#fff', border: 'none', padding: '14px', fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer', fontFamily: '"Jost", sans-serif' }}>
-                {tr.product_btn_cart}
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
+              <button onClick={handleAddToCart} style={{
+                flex: 1, color: '#fff', border: 'none', padding: '14px',
+                fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase',
+                cursor: inCart ? 'default' : 'pointer', fontFamily: '"Jost", sans-serif',
+                background: inCart || added ? '#4A7C59' : '#1A1612',
+                transition: 'background 0.3s',
+              }}>
+                {btnLabel}
               </button>
               <button style={{ padding: '14px 18px', background: 'transparent', border: '1px solid #E2D9CC', cursor: 'pointer', color: '#4A4540', fontSize: '18px' }}>♡</button>
             </div>
+
+            {/* ССЫЛКА НА КОРЗИНУ */}
+            {inCart && (
+              <a href="/cart" style={{ display: 'block', textAlign: 'center', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#B8962E', textDecoration: 'none', marginBottom: '16px', fontFamily: '"Jost", sans-serif' }}>
+                {lang === 'ru' ? 'Перейти в корзину →' : 'Себетке өту →'}
+              </a>
+            )}
 
             {/* КОНТАКТЫ */}
             <div style={{ padding: '14px', background: '#fff', border: '1px solid #E2D9CC', fontSize: '12px', color: '#4A4540', fontWeight: 300, lineHeight: 1.7 }}>
