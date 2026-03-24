@@ -119,10 +119,10 @@ export default function Header() {
             {/* БУРГЕР — только мобильный */}
             {isMobile && (
               <button onClick={() => setMenuOpen(!menuOpen)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', flexDirection: 'column', gap: '5px', justifyContent: 'center', width: '28px', height: '28px' }}>
-                <span style={{ display: 'block', height: '1.5px', background: '#1A1612', transition: 'all 0.3s', transform: menuOpen ? 'rotate(45deg) translateY(6.5px)' : 'none' }} />
-                <span style={{ display: 'block', height: '1.5px', background: '#1A1612', transition: 'all 0.3s', opacity: menuOpen ? 0 : 1 }} />
-                <span style={{ display: 'block', height: '1.5px', background: '#1A1612', transition: 'all 0.3s', transform: menuOpen ? 'rotate(-45deg) translateY(-6.5px)' : 'none' }} />
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', display: 'flex', flexDirection: 'column', gap: '5px', justifyContent: 'center', alignItems: 'center', width: '36px', height: '36px' }}>
+                <span style={{ display: 'block', width: '22px', height: '2px', background: '#1A1612', borderRadius: '2px', transition: 'all 0.3s', transform: menuOpen ? 'rotate(45deg) translateY(7px)' : 'none' }} />
+                <span style={{ display: 'block', width: '22px', height: '2px', background: '#1A1612', borderRadius: '2px', transition: 'all 0.3s', opacity: menuOpen ? 0 : 1 }} />
+                <span style={{ display: 'block', width: '22px', height: '2px', background: '#1A1612', borderRadius: '2px', transition: 'all 0.3s', transform: menuOpen ? 'rotate(-45deg) translateY(-7px)' : 'none' }} />
               </button>
             )}
           </div>
