@@ -1,7 +1,13 @@
+'use client'
+import { useLang } from '@/lib/LangContext'
+import { t } from '@/lib/translations'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
 export default function ConsignPage() {
+  const { lang } = useLang()
+  const tr = t[lang]
+
   return (
     <>
       <Header />
@@ -9,28 +15,21 @@ export default function ConsignPage() {
 
         {/* HERO */}
         <div style={{background:'#1A1612', padding:'64px 80px'}}>
-          <div style={{fontSize:'10px', letterSpacing:'4px', textTransform:'uppercase', color:'#B8962E', marginBottom:'16px', fontWeight:400}}>Комиссионная продажа</div>
+          <div style={{fontSize:'10px', letterSpacing:'4px', textTransform:'uppercase', color:'#B8962E', marginBottom:'16px', fontWeight:400}}>{tr.consign_page_label}</div>
           <h1 style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'48px', fontWeight:300, color:'#fff', marginBottom:'16px'}}>
-            Как это работает и как<br/><em style={{fontStyle:'italic', color:'#D4AF57'}}>сдать на комиссию</em>
+            {tr.consign_page_title}<br/><em style={{fontStyle:'italic', color:'#D4AF57'}}>{tr.consign_page_title_em}</em>
           </h1>
           <p style={{fontSize:'14px', color:'#777', fontWeight:300, lineHeight:1.8, maxWidth:'560px', margin:0}}>
-            АкшаКом — комиссионный магазин. Мы принимаем золотые украшения и технику на продажу от физических лиц. Клиент имеет возможность получить минимальную часть суммы сразу при заключении договора, а оставшуюся — после успешной реализации товара.
+            {tr.consign_page_desc}
           </p>
         </div>
 
         {/* ДЛЯ ПОКУПАТЕЛЕЙ */}
         <div style={{padding:'64px 80px', borderBottom:'1px solid #E2D9CC'}}>
-          <div style={{fontSize:'10px', letterSpacing:'4px', textTransform:'uppercase', color:'#B8962E', marginBottom:'16px', fontWeight:400}}>Для покупателей</div>
-          <h2 style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'36px', fontWeight:300, color:'#1A1612', marginBottom:'40px'}}>
-            Как купить товар
-          </h2>
+          <div style={{fontSize:'10px', letterSpacing:'4px', textTransform:'uppercase', color:'#B8962E', marginBottom:'16px', fontWeight:400}}>{tr.consign_buyers_label}</div>
+          <h2 style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'36px', fontWeight:300, color:'#1A1612', marginBottom:'40px'}}>{tr.consign_buyers_title}</h2>
           <div style={{display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'2px', background:'#E2D9CC'}}>
-            {[
-              {num:'01', title:'Выберите товар', desc:'Просматривайте каталог на сайте. Все дефекты и особенности честно указаны в карточке товара.'},
-              {num:'02', title:'Свяжитесь с нами', desc:'Позвоните или напишите в WhatsApp. Мы покажем реальные фотографии конкретного изделия.'},
-              {num:'03', title:'Оплата', desc:'Оплата при получении наличными или переводом. Консультант подскажет Вам адрес ближайшего отделения комиссионного магазина.'},
-              {num:'04', title:'Получение', desc:'Только самовывоз из магазина в Карагандe. Это позволяет вам лично проверить изделие перед покупкой.'},
-            ].map(item => (
+            {tr.consign_buyers_steps.map(item => (
               <div key={item.num} style={{background:'#fff', padding:'36px 28px'}}>
                 <div style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'48px', fontWeight:300, color:'#E2D9CC', lineHeight:1, marginBottom:'16px'}}>{item.num}</div>
                 <div style={{fontSize:'13px', fontWeight:500, letterSpacing:'1px', textTransform:'uppercase', color:'#1A1612', marginBottom:'12px'}}>{item.title}</div>
@@ -42,17 +41,10 @@ export default function ConsignPage() {
 
         {/* ДЛЯ ПРОДАВЦОВ */}
         <div style={{padding:'64px 80px', borderBottom:'1px solid #E2D9CC', background:'#fff'}}>
-          <div style={{fontSize:'10px', letterSpacing:'4px', textTransform:'uppercase', color:'#B8962E', marginBottom:'16px', fontWeight:400}}>Для продавцов</div>
-          <h2 style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'36px', fontWeight:300, color:'#1A1612', marginBottom:'40px'}}>
-            Как сдать на комиссию
-          </h2>
+          <div style={{fontSize:'10px', letterSpacing:'4px', textTransform:'uppercase', color:'#B8962E', marginBottom:'16px', fontWeight:400}}>{tr.consign_sellers_label}</div>
+          <h2 style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'36px', fontWeight:300, color:'#1A1612', marginBottom:'40px'}}>{tr.consign_sellers_title}</h2>
           <div style={{display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'2px', background:'#E2D9CC'}}>
-            {[
-              {num:'01', title:'Принесите изделие', desc:'Приходите в магазин с золотым украшением или техникой. Оценка бесплатная и ни к чему не обязывает.'},
-              {num:'02', title:'Оценка и описание', desc:'Мы проверяем пробу золота, взвешиваем, фиксируем все дефекты. Согласовываем цену с вами. Заключается договор комиссии согласно законодательству РК.'},
-              {num:'03', title:'Размещение', desc:'Товар фотографируется и размещается на сайте с честным описанием. Вы можете отозвать товар в любой момент.'},
-              {num:'04', title:'Выплата', desc:'Выплата производится за вычетом комиссии магазина, а также любой суммы, полученной при заключении договора комиссии.'},
-            ].map(item => (
+            {tr.consign_sellers_steps.map(item => (
               <div key={item.num} style={{background:'#F7F4EF', padding:'36px 28px'}}>
                 <div style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'48px', fontWeight:300, color:'#E2D9CC', lineHeight:1, marginBottom:'16px'}}>{item.num}</div>
                 <div style={{fontSize:'13px', fontWeight:500, letterSpacing:'1px', textTransform:'uppercase', color:'#1A1612', marginBottom:'12px'}}>{item.title}</div>
@@ -64,20 +56,12 @@ export default function ConsignPage() {
 
         {/* УСЛОВИЯ */}
         <div style={{padding:'64px 80px', borderBottom:'1px solid #E2D9CC'}}>
-          <div style={{fontSize:'10px', letterSpacing:'4px', textTransform:'uppercase', color:'#B8962E', marginBottom:'16px', fontWeight:400}}>Условия</div>
-          <h2 style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'36px', fontWeight:300, color:'#1A1612', marginBottom:'40px'}}>
-            Что мы принимаем
-          </h2>
+          <div style={{fontSize:'10px', letterSpacing:'4px', textTransform:'uppercase', color:'#B8962E', marginBottom:'16px', fontWeight:400}}>{tr.consign_accept_label}</div>
+          <h2 style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'36px', fontWeight:300, color:'#1A1612', marginBottom:'40px'}}>{tr.consign_accept_title}</h2>
           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'40px'}}>
             <div>
-              <div style={{fontSize:'13px', fontWeight:500, letterSpacing:'1px', textTransform:'uppercase', color:'#1A1612', marginBottom:'20px', paddingBottom:'12px', borderBottom:'1px solid #E2D9CC'}}>Украшения из золота</div>
-              {[
-                'Кольца, серьги, цепочки, браслеты, кулоны',
-                'Проба от 375° до 999°',
-                'Принимаем с дефектами и в любом состоянии',
-                'Сломанные, гнутые, с царапинами — всё принимаем',
-                'Без документов и чеков',
-              ].map(item => (
+              <div style={{fontSize:'13px', fontWeight:500, letterSpacing:'1px', textTransform:'uppercase', color:'#1A1612', marginBottom:'20px', paddingBottom:'12px', borderBottom:'1px solid #E2D9CC'}}>{tr.consign_gold_title}</div>
+              {tr.consign_gold_items.map(item => (
                 <div key={item} style={{display:'flex', gap:'12px', alignItems:'flex-start', marginBottom:'12px'}}>
                   <div style={{width:'6px', height:'6px', borderRadius:'50%', background:'#B8962E', flexShrink:0, marginTop:'5px'}}></div>
                   <div style={{fontSize:'13px', color:'#4A4540', fontWeight:300}}>{item}</div>
@@ -85,14 +69,8 @@ export default function ConsignPage() {
               ))}
             </div>
             <div>
-              <div style={{fontSize:'13px', fontWeight:500, letterSpacing:'1px', textTransform:'uppercase', color:'#1A1612', marginBottom:'20px', paddingBottom:'12px', borderBottom:'1px solid #E2D9CC'}}>Электронная техника</div>
-              {[
-                'Смартфоны, ноутбуки, планшеты',
-                'Умные часы и аксессуары',
-                'Принимаем рабочую и нерабочую технику',
-                'С повреждениями корпуса',
-                'Без коробки и документов',
-              ].map(item => (
+              <div style={{fontSize:'13px', fontWeight:500, letterSpacing:'1px', textTransform:'uppercase', color:'#1A1612', marginBottom:'20px', paddingBottom:'12px', borderBottom:'1px solid #E2D9CC'}}>{tr.consign_tech_title}</div>
+              {tr.consign_tech_items.map(item => (
                 <div key={item} style={{display:'flex', gap:'12px', alignItems:'flex-start', marginBottom:'12px'}}>
                   <div style={{width:'6px', height:'6px', borderRadius:'50%', background:'#B8962E', flexShrink:0, marginTop:'5px'}}></div>
                   <div style={{fontSize:'13px', color:'#4A4540', fontWeight:300}}>{item}</div>
@@ -106,16 +84,16 @@ export default function ConsignPage() {
         <div style={{background:'#1A1612', padding:'64px 80px', display:'flex', justifyContent:'space-between', alignItems:'center', gap:'40px'}}>
           <div>
             <div style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'36px', fontWeight:300, color:'#fff', marginBottom:'8px'}}>
-              Готовы сдать на <em style={{fontStyle:'italic', color:'#D4AF57'}}>комиссию?</em>
+              {tr.consign_cta_title} <em style={{fontStyle:'italic', color:'#D4AF57'}}>{tr.consign_cta_title_em}</em>
             </div>
-            <div style={{fontSize:'13px', color:'#666', fontWeight:300}}>Приходите к нам или позвоните — оценим бесплатно</div>
+            <div style={{fontSize:'13px', color:'#666', fontWeight:300}}>{tr.consign_cta_desc}</div>
           </div>
           <div style={{display:'flex', gap:'16px', flexShrink:0}}>
-            <a href="tel:+7 771 270 7975" style={{background:'#B8962E', color:'#fff', padding:'14px 32px', fontSize:'11px', letterSpacing:'2px', textTransform:'uppercase', textDecoration:'none', fontFamily:'"Jost", sans-serif'}}>
-              Позвонить
+            <a href="tel:+77712707975" style={{background:'#B8962E', color:'#fff', padding:'14px 32px', fontSize:'11px', letterSpacing:'2px', textTransform:'uppercase', textDecoration:'none', fontFamily:'"Jost", sans-serif'}}>
+              {tr.consign_cta_call}
             </a>
             <a href="https://wa.me/77712707975" style={{border:'1px solid #2A2520', color:'#888', padding:'14px 32px', fontSize:'11px', letterSpacing:'2px', textTransform:'uppercase', textDecoration:'none', fontFamily:'"Jost", sans-serif'}}>
-              WhatsApp
+              {tr.consign_cta_whatsapp}
             </a>
           </div>
         </div>

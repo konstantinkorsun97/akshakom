@@ -3,23 +3,23 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase, Product, getPhotosByCategory } from '@/lib/supabase'
 import { getConditionStyle, getCategoryForProduct, getProductImage } from '@/lib/productImages'
+import { useLang } from '@/lib/LangContext'
+import { t } from '@/lib/translations'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
 export default function ProductPage() {
   const { id } = useParams()
+  const { lang } = useLang()
+  const tr = t[lang]
+
   const [product, setProduct] = useState<Product | null>(null)
   const [img, setImg] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase
-        .from('products')
-        .select('*')
-        .eq('id', id)
-        .single()
-
+      const { data } = await supabase.from('products').select('*').eq('id', id).single()
       if (data) {
         setProduct(data)
         const cat = getCategoryForProduct(data.name_display)
@@ -35,7 +35,7 @@ export default function ProductPage() {
   if (loading) return (
     <>
       <Header />
-      <div style={{textAlign:'center', padding:'120px', fontFamily:'"Cormorant Garamond", serif', fontSize:'24px', color:'#B8962E'}}>Загрузка...</div>
+      <div style={{textAlign:'center', padding:'120px', fontFamily:'"Cormorant Garamond", serif', fontSize:'24px', color:'#B8962E'}}>{tr.product_loading}</div>
       <Footer />
     </>
   )
@@ -43,7 +43,7 @@ export default function ProductPage() {
   if (!product) return (
     <>
       <Header />
-      <div style={{textAlign:'center', padding:'120px', fontFamily:'"Cormorant Garamond", serif', fontSize:'24px', color:'#4A4540'}}>Товар не найден</div>
+      <div style={{textAlign:'center', padding:'120px', fontFamily:'"Cormorant Garamond", serif', fontSize:'24px', color:'#4A4540'}}>{tr.product_not_found}</div>
       <Footer />
     </>
   )
@@ -57,11 +57,11 @@ export default function ProductPage() {
 
         {/* ХЛЕБНЫЕ КРОШКИ */}
         <div style={{fontSize:'11px', color:'#888', letterSpacing:'1px', marginBottom:'32px', display:'flex', gap:'8px', alignItems:'center'}}>
-          <a href="/" style={{color:'#888', textDecoration:'none'}}>Главная</a>
+          <a href="/" style={{color:'#888', textDecoration:'none'}}>{tr.product_breadcrumb_home}</a>
           <span>→</span>
-          <a href="/jewelry" style={{color:'#888', textDecoration:'none'}}>Украшения из золота</a>
+          <a href="/jewelry" style={{color:'#888', textDecoration:'none'}}>{tr.product_breadcrumb_jewelry}</a>
           <span>→</span>
-          <span style={{color:'#1A1612'}}>Арт. {product.article}</span>
+          <span style={{color:'#1A1612'}}>{tr.product_label_article} {product.article}</span>
         </div>
 
         <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'64px'}}>
@@ -75,13 +75,13 @@ export default function ProductPage() {
               </div>
             </div>
             <div style={{marginTop:'12px', padding:'10px 16px', background:'#F0EDE8', border:'1px solid #E2D9CC', fontSize:'11px', color:'#888', fontWeight:300}}>
-              * Фото носит иллюстративный характер. Для фото реального изделия обращайтесь по тел. <span style={{color:'#B8962E'}}>+7 (7212) 00-00-00</span>
+              {tr.product_photo_note} <span style={{color:'#B8962E'}}>+7 771 270 7975</span>
             </div>
           </div>
 
           {/* ИНФО */}
           <div>
-            <div style={{fontSize:'11px', letterSpacing:'2px', textTransform:'uppercase', color:'#B8962E', marginBottom:'8px'}}>Арт. {product.article}</div>
+            <div style={{fontSize:'11px', letterSpacing:'2px', textTransform:'uppercase', color:'#B8962E', marginBottom:'8px'}}>{tr.product_label_article} {product.article}</div>
             <h1 style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'38px', fontWeight:300, color:'#1A1612', marginBottom:'16px', lineHeight:1.15}}>{product.name_display}</h1>
 
             {/* СОСТОЯНИЕ */}
@@ -102,12 +102,12 @@ export default function ProductPage() {
             {/* ХАРАКТЕРИСТИКИ */}
             <div style={{border:'1px solid #E2D9CC', marginBottom:'32px'}}>
               {[
-                ['Проба', `${product.proba}°`],
-                ['Вес без камня', product.weight_without_stone ? `${product.weight_without_stone} г` : '—'],
-                ['Вес с камнем', product.weight_with_stone && product.weight_with_stone > 0 ? `${product.weight_with_stone} г` : '—'],
-                ['Дата приёма', product.open_date],
-                ['Состояние', product.condition],
-                ['Артикул', product.article],
+                [tr.product_char_proba, `${product.proba}°`],
+                [tr.product_char_weight, product.weight_without_stone ? `${product.weight_without_stone} г` : '—'],
+                [tr.product_char_weight_stone, product.weight_with_stone && product.weight_with_stone > 0 ? `${product.weight_with_stone} г` : '—'],
+                [tr.product_char_date, product.open_date],
+                [tr.product_char_condition, product.condition],
+                [tr.product_char_article, product.article],
               ].map(([label, value]) => (
                 <div key={label} style={{display:'flex', borderBottom:'1px solid #E2D9CC', padding:'12px 16px'}}>
                   <div style={{width:'160px', fontSize:'12px', color:'#888', fontWeight:300, letterSpacing:'.5px'}}>{label}</div>
@@ -118,7 +118,7 @@ export default function ProductPage() {
 
             {/* ЦЕНА */}
             <div style={{marginBottom:'32px'}}>
-              <div style={{fontSize:'12px', color:'#888', letterSpacing:'1px', textTransform:'uppercase', marginBottom:'6px', fontWeight:300}}>Цена</div>
+              <div style={{fontSize:'12px', color:'#888', letterSpacing:'1px', textTransform:'uppercase', marginBottom:'6px', fontWeight:300}}>{tr.product_price_label}</div>
               <div style={{fontFamily:'"Cormorant Garamond", serif', fontSize:'42px', fontWeight:400, color:'#1A1612'}}>
                 {product.estimate_sum?.toLocaleString('ru-RU')} ₸
               </div>
@@ -127,7 +127,7 @@ export default function ProductPage() {
             {/* КНОПКИ */}
             <div style={{display:'flex', gap:'12px', marginBottom:'24px'}}>
               <button style={{flex:1, background:'#1A1612', color:'#fff', border:'none', padding:'16px', fontSize:'11px', letterSpacing:'3px', textTransform:'uppercase', cursor:'pointer', fontFamily:'"Jost", sans-serif'}}>
-                В корзину
+                {tr.product_btn_cart}
               </button>
               <button style={{padding:'16px 20px', background:'transparent', border:'1px solid #E2D9CC', cursor:'pointer', color:'#4A4540', fontSize:'18px'}}>
                 ♡
@@ -136,7 +136,7 @@ export default function ProductPage() {
 
             {/* КОНТАКТЫ */}
             <div style={{padding:'16px', background:'#fff', border:'1px solid #E2D9CC', fontSize:'12px', color:'#4A4540', fontWeight:300, lineHeight:1.7}}>
-              Есть вопросы по изделию? Свяжитесь с нами:<br/>
+              {tr.product_contacts}<br/>
               <span style={{color:'#B8962E', fontWeight:400}}>+7 771 270 7975</span> · WhatsApp · Instagram
             </div>
           </div>
