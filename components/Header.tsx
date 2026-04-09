@@ -91,20 +91,25 @@ export default function Header() {
     })
   }
 
-  function parseNameDisplay(desc: string, proba: number, wStone: number | null, wNoStone: number | null): string {
+  function parseNameDisplay(desc: string, zalogTypeName: string, proba: number, wStone: number | null, wNoStone: number | null): string {
     const d = desc.toUpperCase()
     const weight = wNoStone || wStone || 0
+    // Определяем тип из описания (краткое обозначение из базы)
     let type = 'Изделие'
-    if (d.includes('К-ЦО') || d.includes('К/ЦО') || d.includes('КЦО') || d.includes('К.ЦО') || d.includes('КОЛЬЦО')) type = 'Кольцо'
-    else if (d.includes('С-ГИ') || d.includes('С/ГИ') || d.includes('СЕРЬГИ') || d.includes('С.ГИ')) type = 'Серьги'
-    else if (d.includes('ЦЕП') || d.includes('ЦЕПЬ')) type = 'Цепочка'
-    else if (d.includes('БРАСЛ') || d.includes('БР/ЛЕТ') || d.includes('БР-ЛЕТ')) type = 'Браслет'
-    else if (d.includes('КУЛОН')) type = 'Кулон'
-    else if (d.includes('П-КА') || d.includes('ПОДВ')) type = 'Подвеска'
+    if (d.includes('К-ЦО') || d.includes('К/ЦО') || d.includes('КЦО') || d.includes('К.ЦО') || d.includes('КОЛЬЦО') || d.startsWith('К-ЦО') || d.startsWith('К/ЦО')) type = 'Кольцо'
+    else if (d.includes('С-ГИ') || d.includes('С/ГИ') || d.includes('СЕРЬГИ') || d.includes('С.ГИ') || d.startsWith('С-ГИ') || d.startsWith('С/ГИ')) type = 'Серьги'
+    else if (d.startsWith('ЦЕП') || d.includes('ЦЕПЬ') || d.includes('ЦЕПОЧ')) type = 'Цепочка'
+    else if (d.startsWith('БР') && (d.includes('БРАСЛ') || d.includes('БР/ЛЕТ') || d.includes('БР-ЛЕТ'))) type = 'Браслет'
+    else if (d.startsWith('КУЛОН') || d.includes('КУЛОН')) type = 'Кулон'
+    else if (d.startsWith('П-КА') || d.startsWith('ПОДВ') || d.includes('ПОДВЕС')) type = 'Подвеска'
     else if (d.includes('КРЕСТ')) type = 'Крест'
     else if (d.includes('ПЕЧАТ')) type = 'Печатка'
+    else if (d.includes('БРОШЬ') || d.includes('БРОШ')) type = 'Брошь'
+    else if (d.includes('МЕДАЛ')) type = 'Медальон'
+    else if (d.includes('ЦЕПОЧ')) type = 'Цепочка'
     const parts = [type]
     if (wStone && wStone > 0) parts.push('с камнем')
+    else parts.push('без камня')
     if (proba > 0) parts.push(`${proba}°`)
     if (weight > 0) parts.push(`${weight} г`)
     return parts.join(' · ')
@@ -173,6 +178,7 @@ export default function Header() {
         const wStone = row.WEIGHT_WITH_STONE ? parseFloat(row.WEIGHT_WITH_STONE) : null
         const wNoStone = row.WEIGHT_WITHOUT_STONE ? parseFloat(row.WEIGHT_WITHOUT_STONE) : null
         const descRaw = decodeCP1251(row.DESCRIPTION || '')
+        const zalogTypeName = decodeCP1251(row.ZALOG_TYPE_NAME || '')
         const { condition, defects } = parseCondition(descRaw)
         const parts = row.ARTICLE.split('_')
         return {
@@ -185,7 +191,7 @@ export default function Header() {
           weight_with_stone: wStone,
           weight_without_stone: wNoStone,
           description_raw: descRaw,
-          name_display: parseNameDisplay(descRaw, proba, wStone, wNoStone),
+          name_display: parseNameDisplay(descRaw, zalogTypeName, proba, wStone, wNoStone),
           condition,
           defects: defects || null,
           is_active: true,
