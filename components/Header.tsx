@@ -83,11 +83,12 @@ export default function Header() {
 
   function decodeCP1251(str: string): string {
     return str.replace(/\\x([0-9a-fA-F]{2})/g, (_, hex) => {
-      const code = parseInt(hex, 16)
-      if (code >= 0xC0 && code <= 0xFF) return String.fromCharCode(code - 0xC0 + 0x0410)
-      if (code === 0xA8) return 'Ё'
-      if (code === 0xB8) return 'ё'
-      return String.fromCharCode(code)
+      try {
+        const code = parseInt(hex, 16)
+        return new TextDecoder('windows-1251').decode(new Uint8Array([code]))
+      } catch {
+        return '?'
+      }
     })
   }
 
