@@ -81,6 +81,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Неверный пароль' }, { status: 401 })
     }
 
+    // Если только проверка пароля — возвращаем успех
+    const checkOnly = formData.get('check_only')
+    if (checkOnly === 'true') {
+      return NextResponse.json({ success: true })
+    }
+
     if (!file) {
       return NextResponse.json({ error: 'Файл не найден' }, { status: 400 })
     }
