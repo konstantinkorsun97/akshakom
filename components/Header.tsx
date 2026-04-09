@@ -12,7 +12,6 @@ type UploadResult = {
   added?: number
   updated?: number
   deactivated?: number
-  errors?: number
   total?: number
   error?: string
 }
@@ -27,17 +26,15 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState('')
   const router = useRouter()
 
-  // Модальное окно входа
   const [modalOpen, setModalOpen] = useState(false)
   const [step, setStep] = useState<'password' | 'upload'>('password')
   const [password, setPassword] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [checkingPassword, setCheckingPassword] = useState(false)
-
-  // Загрузка файла
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const [result, setResult] = useState<UploadResult | null>(null)
+  const [progress, setProgress] = useState({ current: 0, total: 0, stage: '' })
 
   const navItems = [
     { label: tr.nav_home, href: '/' },
@@ -75,18 +72,75 @@ export default function Header() {
     setResult(null)
   }
 
+  async function apiCall(body: object) {
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    return res
+  }
+
+  function decodeCP1251(str: string): string {
+    return str.replace(/\\x([0-9a-fA-F]{2})/g, (_, hex) => {
+      const code = parseInt(hex, 16)
+      if (code >= 0xC0 && code <= 0xFF) return String.fromCharCode(code - 0xC0 + 0x0410)
+      if (code === 0xA8) return 'Ё'
+      if (code === 0xB8) return 'ё'
+      return String.fromCharCode(code)
+    })
+  }
+
+  function parseNameDisplay(desc: string, proba: number, wStone: number | null, wNoStone: number | null): string {
+    const d = desc.toUpperCase()
+    const weight = wNoStone || wStone || 0
+    let type = 'Изделие'
+    if (d.includes('К-ЦО') || d.includes('К/ЦО') || d.includes('КЦО') || d.includes('К.ЦО') || d.includes('КОЛЬЦО')) type = 'Кольцо'
+    else if (d.includes('С-ГИ') || d.includes('С/ГИ') || d.includes('СЕРЬГИ') || d.includes('С.ГИ')) type = 'Серьги'
+    else if (d.includes('ЦЕП') || d.includes('ЦЕПЬ')) type = 'Цепочка'
+    else if (d.includes('БРАСЛ') || d.includes('БР/ЛЕТ') || d.includes('БР-ЛЕТ')) type = 'Браслет'
+    else if (d.includes('КУЛОН')) type = 'Кулон'
+    else if (d.includes('П-КА') || d.includes('ПОДВ')) type = 'Подвеска'
+    else if (d.includes('КРЕСТ')) type = 'Крест'
+    else if (d.includes('ПЕЧАТ')) type = 'Печатка'
+    const parts = [type]
+    if (wStone && wStone > 0) parts.push('с камнем')
+    if (proba > 0) parts.push(`${proba}°`)
+    if (weight > 0) parts.push(`${weight} г`)
+    return parts.join(' · ')
+  }
+
+  function parseCondition(desc: string): { condition: string, defects: string } {
+    const d = desc.toUpperCase()
+    const dl: string[] = []
+    if (d.includes('ДЕФ')) dl.push('дефект')
+    if (d.includes('ЦАРАП')) dl.push('царапины')
+    if (d.includes('ГНУТ')) dl.push('гнутое')
+    if (d.includes('СЛОМ')) dl.push('сломано')
+    if (d.includes('ЗАГР')) dl.push('загрязнение')
+    if (d.includes('ВМЯТ')) dl.push('вмятина')
+    if (d.includes('НЕ РАБ')) dl.push('не работает')
+    return { condition: dl.length > 0 ? 'Удовлетворительное' : 'Хорошее', defects: dl.join(', ') }
+  }
+
+  function parseCSV(text: string) {
+    const lines = text.split('\n').filter(l => l.trim())
+    const headers = lines[0].split(';').map(h => h.trim())
+    return lines.slice(1).map(line => {
+      const values = line.split(';')
+      const row: Record<string, string> = {}
+      headers.forEach((h, i) => { row[h] = (values[i] || '').trim() })
+      return row
+    }).filter(row => row.ARTICLE)
+  }
+
   async function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!password) return
     setCheckingPassword(true)
     setPasswordError('')
     try {
-      // Проверяем пароль через API
-      const formData = new FormData()
-      formData.append('password', password)
-      formData.append('check_only', 'true')
-      const res = await fetch('/api/upload', { method: 'POST', body: formData })
-      const data = await res.json()
+      const res = await apiCall({ password, action: 'check_password' })
       if (res.status === 401) {
         setPasswordError('Неверный пароль. Попробуйте ещё раз.')
       } else {
@@ -104,23 +158,93 @@ export default function Header() {
     if (!file) return
     setUploading(true)
     setResult(null)
+    setProgress({ current: 0, total: 0, stage: 'Читаем файл...' })
+
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('password', password)
-      const res = await fetch('/api/upload', { method: 'POST', body: formData })
-      const data = await res.json()
-      setResult(data)
-    } catch {
-      setResult({ error: 'Ошибка соединения с сервером. Проверьте интернет и попробуйте снова.' })
+      const text = await file.text()
+      const rows = parseCSV(text)
+      const now = new Date().toISOString()
+      const csvArticles = new Set(rows.map(r => r.ARTICLE))
+
+      setProgress({ current: 0, total: rows.length, stage: 'Подготовка данных...' })
+
+      const products = rows.map(row => {
+        const proba = parseInt(row.PROBA) || 585
+        const wStone = row.WEIGHT_WITH_STONE ? parseFloat(row.WEIGHT_WITH_STONE) : null
+        const wNoStone = row.WEIGHT_WITHOUT_STONE ? parseFloat(row.WEIGHT_WITHOUT_STONE) : null
+        const descRaw = decodeCP1251(row.DESCRIPTION || '')
+        const { condition, defects } = parseCondition(descRaw)
+        const parts = row.ARTICLE.split('_')
+        return {
+          article: row.ARTICLE,
+          zal_bil_id: parts[0].replace(/\s/g, ''),
+          zalog_number: parseInt(parts[1]) || 1,
+          open_date: row.OPEN_DATE ? row.OPEN_DATE.split('.').reverse().join('-') : null,
+          estimate_sum: parseFloat(row.ESTIMATE_SUM) || 0,
+          proba,
+          weight_with_stone: wStone,
+          weight_without_stone: wNoStone,
+          description_raw: descRaw,
+          name_display: parseNameDisplay(descRaw, proba, wStone, wNoStone),
+          condition,
+          defects: defects || null,
+          is_active: true,
+          source_type: (row.SOURCE_TYPE || 'commission').trim(),
+          updated_at: now,
+          created_at: now,
+        }
+      })
+
+      // Получаем текущие артикулы из БД
+      setProgress({ current: 0, total: rows.length, stage: 'Получаем данные из базы...' })
+      const articlesRes = await apiCall({ password, action: 'get_articles' })
+      const articlesData = await articlesRes.json()
+      const existingArticles: string[] = articlesData.articles || []
+      const existingSet = new Set(existingArticles)
+
+      // Upsert батчами по 50
+      const BATCH = 50
+      let done = 0
+      for (let i = 0; i < products.length; i += BATCH) {
+        const batch = products.slice(i, i + BATCH)
+        setProgress({ current: done, total: products.length, stage: `Загружаем товары... ${done} из ${products.length}` })
+        const res = await apiCall({ password, action: 'upsert', products: batch })
+        if (!res.ok) {
+          const err = await res.json()
+          throw new Error(err.error || 'Ошибка загрузки')
+        }
+        done += batch.length
+      }
+
+      // Деактивируем удалённые
+      const toDeactivate = existingArticles.filter(a => !csvArticles.has(a))
+      let deactivated = 0
+      if (toDeactivate.length > 0) {
+        setProgress({ current: done, total: products.length, stage: 'Снимаем с продажи устаревшие...' })
+        for (let i = 0; i < toDeactivate.length; i += BATCH) {
+          await apiCall({ password, action: 'deactivate', articles: toDeactivate.slice(i, i + BATCH) })
+          deactivated += Math.min(BATCH, toDeactivate.length - i)
+        }
+      }
+
+      setResult({
+        success: true,
+        added: products.filter(p => !existingSet.has(p.article)).length,
+        updated: products.filter(p => existingSet.has(p.article)).length,
+        deactivated,
+        total: products.length,
+      })
+    } catch (err: any) {
+      setResult({ error: err.message || 'Ошибка. Проверьте интернет и попробуйте снова.' })
     } finally {
       setUploading(false)
     }
   }
 
+  const progressPct = progress.total > 0 ? Math.round((progress.current / progress.total) * 100) : 0
+
   return (
     <>
-      {/* TOP BAR — только десктоп */}
       {!isMobile && (
         <div style={{ background: '#1A1612', padding: '8px 40px', display: 'flex', justifyContent: 'space-between' }}>
           <span style={{ fontSize: '11px', color: '#666', fontWeight: 300, letterSpacing: '1px' }}>{tr.topbar_left}</span>
@@ -131,10 +255,8 @@ export default function Header() {
       )}
 
       <header style={{ background: '#fff', borderBottom: '1px solid #E2D9CC', position: 'sticky', top: 0, zIndex: 100 }}>
-
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: isMobile ? '0 16px' : '0 40px', height: isMobile ? '56px' : '68px' }}>
 
-          {/* ЛОГО */}
           <a href="/" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
             <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: isMobile ? '20px' : '26px', fontWeight: 600, letterSpacing: '3px', color: '#1A1612', whiteSpace: 'nowrap' }}>
               АКША<span style={{ color: '#B8962E' }}>КОМ</span>
@@ -144,7 +266,6 @@ export default function Header() {
             </span>
           </a>
 
-          {/* ПОИСК — только десктоп */}
           {!isMobile && (
             <form onSubmit={handleSearch} style={{ flex: 1, maxWidth: '400px', margin: '0 40px', display: 'flex' }}>
               <div style={{ position: 'relative', flex: 1 }}>
@@ -155,17 +276,13 @@ export default function Header() {
                   placeholder={tr.search_placeholder}
                   style={{ width: '100%', padding: '9px 16px 9px 38px', border: '1px solid #E2D9CC', borderRight: 'none', background: '#F7F4EF', fontSize: '13px', fontFamily: '"Jost", sans-serif', fontWeight: 300, color: '#1A1612', outline: 'none' }} />
               </div>
-              <button type="submit"
-                style={{ padding: '9px 16px', background: '#1A1612', color: '#B8962E', border: 'none', cursor: 'pointer', fontSize: '11px', letterSpacing: '1px', fontFamily: '"Jost", sans-serif' }}>
+              <button type="submit" style={{ padding: '9px 16px', background: '#1A1612', color: '#B8962E', border: 'none', cursor: 'pointer', fontSize: '11px', letterSpacing: '1px', fontFamily: '"Jost", sans-serif' }}>
                 {lang === 'ru' ? 'Найти' : 'Іздеу'}
               </button>
             </form>
           )}
 
-          {/* ПРАВАЯ ЧАСТЬ */}
           <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '16px' }}>
-
-            {/* ЯЗЫК */}
             <div style={{ display: 'flex' }}>
               {(['ru', 'kz'] as const).map((l, i) => (
                 <button key={l} onClick={() => setLang(l)}
@@ -175,7 +292,6 @@ export default function Header() {
               ))}
             </div>
 
-            {/* ИКОНКИ — только десктоп */}
             {!isMobile && (
               <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
                 <button onClick={openModal}
@@ -190,9 +306,7 @@ export default function Header() {
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                   </svg>
                   {tr.favorites}
-                  {favCount > 0 && (
-                    <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#C0392B', color: '#fff', fontSize: '9px', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500 }}>{favCount}</span>
-                  )}
+                  {favCount > 0 && <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#C0392B', color: '#fff', fontSize: '9px', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500 }}>{favCount}</span>}
                 </a>
                 <a href="/cart" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: '#4A4540', fontSize: '11px', fontFamily: '"Jost", sans-serif', fontWeight: 300, letterSpacing: '1px', position: 'relative' }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -204,19 +318,15 @@ export default function Header() {
               </div>
             )}
 
-            {/* ИЗБРАННОЕ — мобильный */}
             {isMobile && (
               <a href="/favorites" style={{ textDecoration: 'none', color: '#4A4540', position: 'relative', display: 'flex' }}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                 </svg>
-                {favCount > 0 && (
-                  <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#C0392B', color: '#fff', fontSize: '9px', width: '15px', height: '15px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500 }}>{favCount}</span>
-                )}
+                {favCount > 0 && <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#C0392B', color: '#fff', fontSize: '9px', width: '15px', height: '15px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500 }}>{favCount}</span>}
               </a>
             )}
 
-            {/* КОРЗИНА — мобильный */}
             {isMobile && (
               <a href="/cart" style={{ textDecoration: 'none', color: '#4A4540', position: 'relative', display: 'flex' }}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -226,7 +336,6 @@ export default function Header() {
               </a>
             )}
 
-            {/* БУРГЕР — мобильный */}
             {isMobile && (
               <button onClick={() => setMenuOpen(!menuOpen)}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', display: 'flex', flexDirection: 'column', gap: '5px', justifyContent: 'center', alignItems: 'center', width: '36px', height: '36px' }}>
@@ -238,7 +347,6 @@ export default function Header() {
           </div>
         </div>
 
-        {/* ПОИСК — мобильный */}
         {isMobile && (
           <form onSubmit={handleSearch} style={{ padding: '8px 16px 10px', borderTop: '1px solid #E2D9CC', display: 'flex', gap: '8px' }}>
             <div style={{ position: 'relative', flex: 1 }}>
@@ -249,14 +357,12 @@ export default function Header() {
                 placeholder={tr.search_placeholder}
                 style={{ width: '100%', padding: '8px 12px 8px 32px', border: '1px solid #E2D9CC', background: '#F7F4EF', fontSize: '13px', fontFamily: '"Jost", sans-serif', fontWeight: 300, color: '#1A1612', outline: 'none', boxSizing: 'border-box' }} />
             </div>
-            <button type="submit"
-              style={{ padding: '8px 14px', background: '#1A1612', color: '#B8962E', border: 'none', cursor: 'pointer', fontSize: '11px', fontFamily: '"Jost", sans-serif', whiteSpace: 'nowrap' }}>
+            <button type="submit" style={{ padding: '8px 14px', background: '#1A1612', color: '#B8962E', border: 'none', cursor: 'pointer', fontSize: '11px', fontFamily: '"Jost", sans-serif', whiteSpace: 'nowrap' }}>
               {lang === 'ru' ? 'Найти' : 'Іздеу'}
             </button>
           </form>
         )}
 
-        {/* NAV — десктоп */}
         {!isMobile && (
           <nav style={{ borderTop: '1px solid #E2D9CC', display: 'flex', justifyContent: 'center' }}>
             {navItems.map(item => (
@@ -267,7 +373,6 @@ export default function Header() {
           </nav>
         )}
 
-        {/* МОБИЛЬНОЕ МЕНЮ */}
         {isMobile && (
           <div style={{ maxHeight: menuOpen ? '500px' : '0', overflow: 'hidden', transition: 'max-height 0.3s ease' }}>
             <nav style={{ borderTop: '1px solid #E2D9CC', display: 'flex', flexDirection: 'column', background: '#fff' }}>
@@ -295,17 +400,15 @@ export default function Header() {
 
       {/* МОДАЛЬНОЕ ОКНО */}
       {modalOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(26,22,18,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(26,22,18,0.75)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
           onClick={e => { if (e.target === e.currentTarget) closeModal() }}>
           <div style={{ background: '#fff', width: '100%', maxWidth: '480px', padding: '40px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
 
-            {/* Кнопка закрыть */}
             <button onClick={closeModal}
-              style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', cursor: 'pointer', color: '#888', fontSize: '20px', lineHeight: 1 }}>
+              style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', cursor: 'pointer', color: '#888', fontSize: '20px', lineHeight: 1, width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               ✕
             </button>
 
-            {/* Заголовок */}
             <div style={{ textAlign: 'center', marginBottom: '32px' }}>
               <div style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '26px', fontWeight: 300, color: '#1A1612', marginBottom: '4px' }}>
                 АКША<span style={{ color: '#B8962E' }}>КОМ</span>
@@ -322,9 +425,7 @@ export default function Header() {
                   <div style={{ fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#B8962E', marginBottom: '8px' }}>
                     {lang === 'ru' ? 'Пароль' : 'Құпия сөз'}
                   </div>
-                  <input
-                    type="password"
-                    value={password}
+                  <input type="password" value={password}
                     onChange={e => { setPassword(e.target.value); setPasswordError('') }}
                     placeholder={lang === 'ru' ? 'Введите пароль' : 'Құпия сөзді енгізіңіз'}
                     autoFocus
@@ -343,10 +444,9 @@ export default function Header() {
               </form>
             )}
 
-            {/* ШАГ 2: ЗАГРУЗКА ФАЙЛА */}
+            {/* ШАГ 2: ЗАГРУЗКА */}
             {step === 'upload' && (
               <div>
-                {/* Форма загрузки — показываем только если нет результата */}
                 {!result && (
                   <form onSubmit={handleUpload}>
                     <div style={{ marginBottom: '20px' }}>
@@ -364,56 +464,56 @@ export default function Header() {
                       )}
                     </div>
 
-                    {/* Индикатор загрузки */}
+                    {/* ПРОГРЕСС */}
                     {uploading && (
-                      <div style={{ marginBottom: '16px', padding: '14px', background: '#F7F4EF', border: '1px solid #E2D9CC', textAlign: 'center' }}>
-                        <div style={{ fontSize: '13px', color: '#4A4540', marginBottom: '8px' }}>
-                          ⏳ {lang === 'ru' ? 'Обрабатываем файл...' : 'Файл өңделуде...'}
+                      <div style={{ marginBottom: '16px', padding: '16px', background: '#F7F4EF', border: '1px solid #E2D9CC' }}>
+                        <div style={{ fontSize: '12px', color: '#4A4540', marginBottom: '10px', textAlign: 'center' }}>
+                          ⏳ {progress.stage}
                         </div>
-                        <div style={{ height: '4px', background: '#E2D9CC', borderRadius: '2px', overflow: 'hidden' }}>
-                          <div style={{ height: '100%', background: '#B8962E', borderRadius: '2px', animation: 'progress 1.5s ease-in-out infinite', width: '60%' }} />
+                        <div style={{ height: '6px', background: '#E2D9CC', borderRadius: '3px', overflow: 'hidden' }}>
+                          <div style={{ height: '100%', background: '#B8962E', borderRadius: '3px', width: progress.total > 0 ? `${progressPct}%` : '30%', transition: 'width 0.3s', animation: progress.total === 0 ? 'pulse 1.5s ease-in-out infinite' : 'none' }} />
                         </div>
-                        <style>{`@keyframes progress { 0% { transform: translateX(-100%) } 100% { transform: translateX(200%) } }`}</style>
+                        {progress.total > 0 && (
+                          <div style={{ marginTop: '6px', fontSize: '11px', color: '#888', textAlign: 'right' }}>
+                            {progressPct}%
+                          </div>
+                        )}
+                        <style>{`@keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }`}</style>
                       </div>
                     )}
 
                     <button type="submit" disabled={uploading || !file}
-                      style={{ width: '100%', padding: '14px', background: uploading ? '#888' : '#1A1612', color: '#fff', border: 'none', fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', cursor: uploading ? 'default' : 'pointer', fontFamily: '"Jost", sans-serif', marginBottom: '16px' }}>
+                      style={{ width: '100%', padding: '14px', background: uploading ? '#888' : '#1A1612', color: '#fff', border: 'none', fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', cursor: uploading ? 'default' : 'pointer', fontFamily: '"Jost", sans-serif' }}>
                       {uploading ? (lang === 'ru' ? 'Загрузка...' : 'Жүктелуде...') : (lang === 'ru' ? 'Загрузить и обновить' : 'Жүктеу және жаңарту')}
                     </button>
                   </form>
                 )}
 
-                {/* РЕЗУЛЬТАТ УСПЕХ */}
+                {/* УСПЕХ */}
                 {result?.success && (
                   <div>
-                    <div style={{ padding: '16px', background: '#F0FFF4', border: '1px solid #B0EEB0', marginBottom: '20px', textAlign: 'center' }}>
-                      <div style={{ fontSize: '28px', marginBottom: '8px' }}>✅</div>
-                      <div style={{ fontSize: '14px', fontWeight: 500, color: '#27AE60', marginBottom: '4px' }}>
+                    <div style={{ padding: '20px', background: '#F0FFF4', border: '1px solid #B0EEB0', marginBottom: '20px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '32px', marginBottom: '8px' }}>✅</div>
+                      <div style={{ fontSize: '15px', fontWeight: 500, color: '#27AE60', marginBottom: '4px' }}>
                         {lang === 'ru' ? 'Каталог успешно обновлён!' : 'Каталог сәтті жаңартылды!'}
                       </div>
                       <div style={{ fontSize: '11px', color: '#888' }}>
-                        {lang === 'ru' ? 'Сайт уже отображает актуальные данные' : 'Сайт қазір өзекті деректерді көрсетеді'}
+                        {lang === 'ru' ? 'Сайт уже показывает актуальные данные' : 'Сайт қазір өзекті деректерді көрсетеді'}
                       </div>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '20px' }}>
                       {[
-                        { label: lang === 'ru' ? 'Всего в файле' : 'Файлда барлығы', value: result.total, color: '#1A1612', bg: '#F7F4EF' },
-                        { label: lang === 'ru' ? 'Добавлено новых' : 'Жаңа қосылды', value: result.added, color: '#27AE60', bg: '#F0FFF4' },
-                        { label: lang === 'ru' ? 'Обновлено' : 'Жаңартылды', value: result.updated, color: '#2980B9', bg: '#F0F8FF' },
-                        { label: lang === 'ru' ? 'Снято с продажи' : 'Сатудан алынды', value: result.deactivated, color: '#E67E22', bg: '#FFF8F0' },
+                        { label: lang === 'ru' ? 'Всего в файле' : 'Файлда барлығы', value: result.total, color: '#1A1612' },
+                        { label: lang === 'ru' ? 'Добавлено новых' : 'Жаңа қосылды', value: result.added, color: '#27AE60' },
+                        { label: lang === 'ru' ? 'Обновлено' : 'Жаңартылды', value: result.updated, color: '#2980B9' },
+                        { label: lang === 'ru' ? 'Снято с продажи' : 'Сатудан алынды', value: result.deactivated, color: '#E67E22' },
                       ].map(item => (
-                        <div key={item.label} style={{ padding: '12px', background: item.bg, border: '1px solid #E2D9CC', textAlign: 'center' }}>
-                          <div style={{ fontSize: '26px', fontWeight: 600, color: item.color, fontFamily: '"Cormorant Garamond", serif' }}>{item.value}</div>
+                        <div key={item.label} style={{ padding: '12px', background: '#F7F4EF', border: '1px solid #E2D9CC', textAlign: 'center' }}>
+                          <div style={{ fontSize: '28px', fontWeight: 600, color: item.color, fontFamily: '"Cormorant Garamond", serif' }}>{item.value}</div>
                           <div style={{ fontSize: '9px', color: '#888', letterSpacing: '1px', textTransform: 'uppercase', marginTop: '2px' }}>{item.label}</div>
                         </div>
                       ))}
                     </div>
-                    {(result.errors || 0) > 0 && (
-                      <div style={{ padding: '10px 14px', background: '#FFF8F0', border: '1px solid #FFD0A0', fontSize: '12px', color: '#E67E22', marginBottom: '16px' }}>
-                        ⚠ {lang === 'ru' ? `При обработке ${result.errors} строк возникли ошибки — они пропущены` : `Өңдеу кезінде ${result.errors} жолда қате болды — олар өткізілді`}
-                      </div>
-                    )}
                     <button onClick={() => { setFile(null); setResult(null) }}
                       style={{ width: '100%', padding: '12px', background: 'transparent', color: '#1A1612', border: '1px solid #E2D9CC', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer', fontFamily: '"Jost", sans-serif' }}>
                       {lang === 'ru' ? 'Загрузить ещё раз' : 'Қайта жүктеу'}
@@ -421,23 +521,21 @@ export default function Header() {
                   </div>
                 )}
 
-                {/* РЕЗУЛЬТАТ ОШИБКА */}
+                {/* ОШИБКА */}
                 {result?.error && (
                   <div>
-                    <div style={{ padding: '16px', background: '#FFF0F0', border: '1px solid #FFB0B0', marginBottom: '20px', textAlign: 'center' }}>
-                      <div style={{ fontSize: '28px', marginBottom: '8px' }}>❌</div>
+                    <div style={{ padding: '20px', background: '#FFF0F0', border: '1px solid #FFB0B0', marginBottom: '16px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '32px', marginBottom: '8px' }}>❌</div>
                       <div style={{ fontSize: '14px', fontWeight: 500, color: '#C0392B', marginBottom: '8px' }}>
                         {lang === 'ru' ? 'Ошибка при загрузке' : 'Жүктеу қатесі'}
                       </div>
-                      <div style={{ fontSize: '12px', color: '#854F0B', lineHeight: 1.6 }}>
-                        {result.error}
-                      </div>
+                      <div style={{ fontSize: '12px', color: '#854F0B', lineHeight: 1.6 }}>{result.error}</div>
                     </div>
-                    <div style={{ padding: '12px 16px', background: '#F7F4EF', border: '1px solid #E2D9CC', fontSize: '12px', color: '#4A4540', lineHeight: 1.7, marginBottom: '16px' }}>
-                      <strong>{lang === 'ru' ? 'Что делать:' : 'Не істеу керек:'}</strong><br />
-                      {lang === 'ru'
-                        ? '• Убедитесь что файл в формате CSV\n• Разделитель должен быть точка с запятой (;)\n• Файл должен содержать заголовки колонок\n• Попробуйте экспортировать снова из IBExpert'
-                        : '• CSV форматында екенін тексеріңіз\n• Бөлгіш нүктелі үтір (;) болуы тиіс\n• Файлда баған тақырыптары болуы тиіс\n• IBExpert-тен қайта экспорттауды көріңіз'}
+                    <div style={{ padding: '12px 16px', background: '#F7F4EF', border: '1px solid #E2D9CC', fontSize: '12px', color: '#4A4540', lineHeight: 1.8, marginBottom: '16px' }}>
+                      <strong>{lang === 'ru' ? 'Что проверить:' : 'Не тексеру керек:'}</strong><br />
+                      • {lang === 'ru' ? 'Файл в формате CSV (разделитель — точка с запятой)' : 'CSV форматы (бөлгіш — нүктелі үтір)'}<br />
+                      • {lang === 'ru' ? 'Первая строка — заголовки колонок' : 'Бірінші жол — баған тақырыптары'}<br />
+                      • {lang === 'ru' ? 'Стабильный интернет во время загрузки' : 'Жүктеу кезінде тұрақты интернет'}
                     </div>
                     <button onClick={() => { setFile(null); setResult(null) }}
                       style={{ width: '100%', padding: '12px', background: '#1A1612', color: '#fff', border: 'none', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer', fontFamily: '"Jost", sans-serif' }}>
