@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useLang } from '@/lib/LangContext'
 import { t } from '@/lib/translations'
 import { useIsMobile } from '@/lib/useIsMobile'
@@ -13,6 +14,8 @@ export default function Header() {
   const { totalCount } = useCart()
   const { totalCount: favCount } = useFavorites()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const router = useRouter()
 
   const navItems = [
     { label: tr.nav_home, href: '/' },
@@ -22,6 +25,15 @@ export default function Header() {
     { label: tr.nav_sale, href: '/sale' },
     { label: tr.nav_consign, href: '/consign' },
   ]
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/jewelry?q=${encodeURIComponent(searchQuery.trim())}`)
+      setSearchQuery('')
+      setMenuOpen(false)
+    }
+  }
 
   return (
     <>
@@ -54,13 +66,24 @@ export default function Header() {
 
           {/* ПОИСК — только десктоп */}
           {!isMobile && (
-            <div style={{ flex: 1, maxWidth: '400px', margin: '0 40px', position: 'relative' }}>
-              <svg style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '15px', height: '15px', stroke: '#4A4540', fill: 'none', strokeWidth: 1.5 }} viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-              </svg>
-              <input type="text" placeholder={tr.search_placeholder}
-                style={{ width: '100%', padding: '9px 16px 9px 38px', border: '1px solid #E2D9CC', background: '#F7F4EF', fontSize: '13px', fontFamily: '"Jost", sans-serif', fontWeight: 300, color: '#1A1612', outline: 'none' }} />
-            </div>
+            <form onSubmit={handleSearch} style={{ flex: 1, maxWidth: '400px', margin: '0 40px', display: 'flex', gap: '0' }}>
+              <div style={{ position: 'relative', flex: 1 }}>
+                <svg style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '15px', height: '15px', stroke: '#4A4540', fill: 'none', strokeWidth: 1.5 }} viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                </svg>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  placeholder={tr.search_placeholder}
+                  style={{ width: '100%', padding: '9px 16px 9px 38px', border: '1px solid #E2D9CC', borderRight: 'none', background: '#F7F4EF', fontSize: '13px', fontFamily: '"Jost", sans-serif', fontWeight: 300, color: '#1A1612', outline: 'none' }}
+                />
+              </div>
+              <button type="submit"
+                style={{ padding: '9px 16px', background: '#1A1612', color: '#B8962E', border: 'none', cursor: 'pointer', fontSize: '11px', letterSpacing: '1px', fontFamily: '"Jost", sans-serif' }}>
+                {lang === 'ru' ? 'Найти' : 'Іздеу'}
+              </button>
+            </form>
           )}
 
           {/* ПРАВАЯ ЧАСТЬ */}
@@ -149,15 +172,24 @@ export default function Header() {
 
         {/* ПОИСК НА МОБИЛЬНОМ */}
         {isMobile && (
-          <div style={{ padding: '8px 16px 10px', borderTop: '1px solid #E2D9CC' }}>
-            <div style={{ position: 'relative' }}>
+          <form onSubmit={handleSearch} style={{ padding: '8px 16px 10px', borderTop: '1px solid #E2D9CC', display: 'flex', gap: '8px' }}>
+            <div style={{ position: 'relative', flex: 1 }}>
               <svg style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', stroke: '#4A4540', fill: 'none', strokeWidth: 1.5 }} viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
               </svg>
-              <input type="text" placeholder={tr.search_placeholder}
-                style={{ width: '100%', padding: '8px 12px 8px 32px', border: '1px solid #E2D9CC', background: '#F7F4EF', fontSize: '13px', fontFamily: '"Jost", sans-serif', fontWeight: 300, color: '#1A1612', outline: 'none' }} />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder={tr.search_placeholder}
+                style={{ width: '100%', padding: '8px 12px 8px 32px', border: '1px solid #E2D9CC', background: '#F7F4EF', fontSize: '13px', fontFamily: '"Jost", sans-serif', fontWeight: 300, color: '#1A1612', outline: 'none', boxSizing: 'border-box' }}
+              />
             </div>
-          </div>
+            <button type="submit"
+              style={{ padding: '8px 14px', background: '#1A1612', color: '#B8962E', border: 'none', cursor: 'pointer', fontSize: '11px', fontFamily: '"Jost", sans-serif', whiteSpace: 'nowrap' }}>
+              {lang === 'ru' ? 'Найти' : 'Іздеу'}
+            </button>
+          </form>
         )}
 
         {/* NAV — только десктоп */}
