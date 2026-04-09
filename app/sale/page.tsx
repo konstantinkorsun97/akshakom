@@ -128,7 +128,7 @@ export default function SalePage() {
             <div>
               <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: isMobile ? '22px' : '28px', fontWeight: 300, color: '#1A1612' }}>
-                  {lang === 'ru' ? 'Золото нашего магазина' : 'Дүкеніміздің алтыны'}
+                  {lang === 'ru' ? 'Специальные и ограниченные предложения нашего магазина' : 'Дүкеніміздің арнайы және шектеулі ұсыныстары'}
                 </div>
                 <div style={{ fontSize: '11px', color: '#888', letterSpacing: '1px' }}>
                   {products.length} {lang === 'ru' ? 'изделий' : 'бұйым'}
@@ -149,9 +149,6 @@ export default function SalePage() {
                           {img && <img src={img} alt={p.name_display} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
                         </a>
                         <div style={{ position: 'absolute', top: '8px', left: '8px', background: '#B8962E', color: '#fff', fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', padding: '2px 6px', fontWeight: 500 }}>{p.proba}°</div>
-                        <div style={{ position: 'absolute', top: '8px', right: '40px', background: '#C0392B', color: '#fff', fontSize: '8px', letterSpacing: '1px', textTransform: 'uppercase', padding: '2px 6px', fontWeight: 500 }}>
-                          {lang === 'ru' ? 'НАШЕ' : 'БІЗДІКІ'}
-                        </div>
                         <button
                           onClick={() => toggleItem({ id: String(p.id), article: p.article, name: p.name_display, price: p.estimate_sum, proba: p.proba })}
                           style={{ position: 'absolute', top: '8px', right: '8px', background: inFav ? 'rgba(192,57,43,0.9)' : 'rgba(255,255,255,0.85)', border: 'none', cursor: 'pointer', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', transition: 'all 0.2s' }}>
