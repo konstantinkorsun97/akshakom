@@ -278,7 +278,7 @@ export default function Header() {
                 </a>
               ))}
               <button onClick={() => { setMenuOpen(false); openModal() }}
-                style={{ padding: '14px 20px', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', textDecoration: 'none', color: '#4A4540', borderBottom: '1px solid #F0EDE8', fontFamily: '"Jost", sans-serif', background: 'none', border: 'none', borderBottom: '1px solid #F0EDE8', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                style={{ padding: '14px 20px', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#4A4540', fontFamily: '"Jost", sans-serif', background: 'none', border: 'none', borderBottom: '1px solid #F0EDE8', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
                 </svg>
