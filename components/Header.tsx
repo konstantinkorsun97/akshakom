@@ -92,21 +92,26 @@ export default function Header() {
   }
 
   function parseNameDisplay(desc: string, zalogTypeName: string, proba: number, wStone: number | null, wNoStone: number | null): string {
-    const d = desc.toUpperCase()
+    const d = desc.toUpperCase().trim()
     const weight = wNoStone || wStone || 0
-    // Определяем тип из описания (краткое обозначение из базы)
     let type = 'Изделие'
-    if (d.includes('К-ЦО') || d.includes('К/ЦО') || d.includes('КЦО') || d.includes('К.ЦО') || d.includes('КОЛЬЦО') || d.startsWith('К-ЦО') || d.startsWith('К/ЦО')) type = 'Кольцо'
-    else if (d.includes('С-ГИ') || d.includes('С/ГИ') || d.includes('СЕРЬГИ') || d.includes('С.ГИ') || d.startsWith('С-ГИ') || d.startsWith('С/ГИ')) type = 'Серьги'
-    else if (d.startsWith('ЦЕП') || d.includes('ЦЕПЬ') || d.includes('ЦЕПОЧ')) type = 'Цепочка'
-    else if (d.startsWith('БР') && (d.includes('БРАСЛ') || d.includes('БР/ЛЕТ') || d.includes('БР-ЛЕТ'))) type = 'Браслет'
-    else if (d.startsWith('КУЛОН') || d.includes('КУЛОН')) type = 'Кулон'
-    else if (d.startsWith('П-КА') || d.startsWith('ПОДВ') || d.includes('ПОДВЕС')) type = 'Подвеска'
-    else if (d.includes('КРЕСТ')) type = 'Крест'
-    else if (d.includes('ПЕЧАТ')) type = 'Печатка'
-    else if (d.includes('БРОШЬ') || d.includes('БРОШ')) type = 'Брошь'
-    else if (d.includes('МЕДАЛ')) type = 'Медальон'
-    else if (d.includes('ЦЕПОЧ')) type = 'Цепочка'
+
+    if (/^(К-ЦО|К\/ЦО|КЦО|К\\ЦО|К\.ЦО|КОЛ[^Ь]|КОЛЬЦО)/.test(d)) type = 'Кольцо'
+    else if (/^(С-ГИ|С-ГА|С\/ГИ|С\/ГА|СГИ|С\.ГИ|С\\ГИ|C-ГИ|СЕРГИ|СЕРЬГИ)/.test(d)) type = 'Серьги'
+    else if (/^(ЦЕПЬ|ЦЕП|Ц-ПЬ|ЦЕПОЧ)/.test(d)) type = 'Цепочка'
+    else if (/^(Б-Т|БР-Т|Б-ЛЕТ|БР-ЕТ|БР\/Т|БРАСЛЕТ|Б-КА|БР-ЛЕТ|БР\/ЛЕТ|БРАСЛ)/.test(d)) type = 'Браслет'
+    else if (/^(П-КА|ПОД-КА|П\/КА|ПОДВ|ПОДВЕС)/.test(d)) type = 'Подвеска'
+    else if (/^(КУЛОН|К-Н)/.test(d)) type = 'Кулон'
+    else if (/^(ПЕЧАТКА|ПЕЧ-КА|ПЕЧ)/.test(d)) type = 'Печатка'
+    else if (/^(КРЕСТ|КРЕСТИК)/.test(d)) type = 'Крест'
+    else if (/^КОЛЬЕ/.test(d)) type = 'Колье'
+    else if (/^ЧАСЫ/.test(d)) type = 'Часы'
+    else if (/^БУЛАВКА/.test(d)) type = 'Булавка'
+    else if (/^ОБР/.test(d)) type = 'Кольцо обр.'
+    else if (/^БРОШЬ/.test(d)) type = 'Брошь'
+    else if (/^МЕДАЛ/.test(d)) type = 'Медальон'
+    else if (/^КОЛЬЕ/.test(d)) type = 'Колье'
+
     const parts = [type]
     if (wStone && wStone > 0) parts.push('с камнем')
     else parts.push('без камня')
