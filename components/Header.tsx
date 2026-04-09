@@ -14,6 +14,7 @@ export default function Header() {
   const { totalCount } = useCart()
   const { totalCount: favCount } = useFavorites()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [loginOpen, setLoginOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const router = useRouter()
 
@@ -111,12 +112,36 @@ export default function Header() {
             {/* ИКОНКИ — только десктоп */}
             {!isMobile && (
               <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-                <button style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: '#4A4540', fontSize: '11px', fontFamily: '"Jost", sans-serif', fontWeight: 300, letterSpacing: '1px' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-                  </svg>
-                  {tr.login}
-                </button>
+                <div style={{ position: 'relative' }}>
+                  <button
+                    onClick={() => setLoginOpen(!loginOpen)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: '#4A4540', fontSize: '11px', fontFamily: '"Jost", sans-serif', fontWeight: 300, letterSpacing: '1px' }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+                    </svg>
+                    {tr.login}
+                  </button>
+                  {loginOpen && (
+                    <>
+                      {/* Оверлей для закрытия */}
+                      <div onClick={() => setLoginOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 98 }} />
+                      {/* Дропдаун */}
+                      <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, background: '#fff', border: '1px solid #E2D9CC', boxShadow: '0 4px 20px rgba(0,0,0,0.1)', zIndex: 99, minWidth: '160px' }}>
+                        <a href="/admin"
+                          onClick={() => setLoginOpen(false)}
+                          style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', textDecoration: 'none', color: '#1A1612', fontSize: '11px', letterSpacing: '1.5px', textTransform: 'uppercase', fontFamily: '"Jost", sans-serif', borderBottom: '1px solid #F0EDE8' }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
+                          </svg>
+                          Админ-панель
+                        </a>
+                        <div style={{ padding: '10px 16px', fontSize: '10px', color: '#888', fontFamily: '"Jost", sans-serif' }}>
+                          Только для сотрудников
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
                 <a href="/favorites" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', color: '#4A4540', fontSize: '11px', fontFamily: '"Jost", sans-serif', fontWeight: 300, letterSpacing: '1px', position: 'relative' }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -213,6 +238,13 @@ export default function Header() {
                   {item.label}
                 </a>
               ))}
+              <a href="/admin" onClick={() => setMenuOpen(false)}
+                style={{ padding: '14px 20px', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', textDecoration: 'none', color: '#B8962E', borderBottom: '1px solid #F0EDE8', fontFamily: '"Jost", sans-serif', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
+                </svg>
+                Админ-панель
+              </a>
               <div style={{ padding: '14px 20px', background: '#1A1612' }}>
                 <div style={{ fontSize: '11px', color: '#D4AF57', letterSpacing: '1px', fontWeight: 300 }}>+7 771 270 7975</div>
                 <div style={{ fontSize: '10px', color: '#555', letterSpacing: '1px', fontWeight: 300, marginTop: '4px' }}>WhatsApp · @zoloto_karaganda_torgi</div>
