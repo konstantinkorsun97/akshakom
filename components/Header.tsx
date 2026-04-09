@@ -82,13 +82,12 @@ export default function Header() {
   }
 
   function decodeCP1251(str: string): string {
+    // Файл уже декодирован как CP1251 при чтении через TextDecoder
+    // Эта функция теперь только на случай если в строке есть \xNN последовательности
     return str.replace(/\\x([0-9a-fA-F]{2})/g, (_, hex) => {
       try {
-        const code = parseInt(hex, 16)
-        return new TextDecoder('windows-1251').decode(new Uint8Array([code]))
-      } catch {
-        return '?'
-      }
+        return new TextDecoder('windows-1251').decode(new Uint8Array([parseInt(hex, 16)]))
+      } catch { return '?' }
     })
   }
 
@@ -167,7 +166,10 @@ export default function Header() {
     setProgress({ current: 0, total: 0, stage: 'Читаем файл...' })
 
     try {
-      const text = await file.text()
+      // Читаем файл как бинарный (latin1) и декодируем как CP1251
+      const buffer = await file.arrayBuffer()
+      const bytes = new Uint8Array(buffer)
+      const text = new TextDecoder('windows-1251').decode(bytes)
       const rows = parseCSV(text)
       const now = new Date().toISOString()
       const csvArticles = new Set(rows.map(r => r.ARTICLE))
