@@ -10,35 +10,28 @@ async function loadPhotos(category: string): Promise<string[]> {
 }
 
 const CATEGORY_MAP: Record<string, string> = {
-  'к-цо': 'rings',
+  // Кольца
   'кольцо': 'rings',
   'печатка': 'rings',
-  'обручал': 'rings',
+  'кольцо обр.': 'rings',
 
-  'с-ги': 'earrings',
-  'с-га': 'earrings',
-  'серьг': 'earrings',
-  'серьга': 'earrings',
+  // Серьги
+  'серьги': 'earrings',
+  'детские серьги': 'earrings',
 
-  'цепь': 'chains',
+  // Цепочки
   'цепочка': 'chains',
-  'цепь+': 'chains',
+  'колье': 'chains',
 
-  'бр-т': 'bracelets',
+  // Браслеты
   'браслет': 'bracelets',
 
-  'п-ка': 'pendants',
-  'к-он': 'pendants',
-  'кулон': 'pendants',
+  // Подвески и кулоны
   'подвеска': 'pendants',
+  'кулон': 'pendants',
 
-  'колье': 'chains',
-  'ожерелье': 'chains',
-  'брошь': 'default',
-  'брош': 'default',
-  'булавка': 'default',
-  'бусы': 'default',
-  'пирсинг': 'default',
+  // Всё остальное → default
+  // (Изделие, Крест, Булавка, Часы, Брошь, Медальон и т.д.)
 }
 
 export function getCategoryForProduct(nameDisplay: string): string {
