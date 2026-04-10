@@ -30,7 +30,8 @@ const CATEGORY_MAP: Record<string, string> = {
   'подвеска': 'pendants',
   'кулон': 'pendants',
 
-  // Всё остальное → default
+  // Кресты
+  'крест': 'crosses',
   // (Изделие, Крест, Булавка, Часы, Брошь, Медальон и т.д.)
 }
 
