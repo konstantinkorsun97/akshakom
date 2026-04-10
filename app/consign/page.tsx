@@ -91,10 +91,10 @@ export default function ConsignPage() {
             <div style={{ fontSize: '13px', color: '#666', fontWeight: 300 }}>{tr.consign_cta_desc}</div>
           </div>
           <div style={{ display: 'flex', gap: '12px', flexShrink: 0, flexDirection: isMobile ? 'column' : 'row', width: isMobile ? '100%' : 'auto' }}>
-            <a href="tel:+77712707975" style={{ background: '#B8962E', color: '#fff', padding: '14px 32px', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: '"Jost", sans-serif', textAlign: 'center' }}>
+            <a href="tel:+77000513007" style={{ background: '#B8962E', color: '#fff', padding: '14px 32px', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: '"Jost", sans-serif', textAlign: 'center' }}>
               {tr.consign_cta_call}
             </a>
-            <a href="https://wa.me/77712707975" style={{ border: '1px solid #2A2520', color: '#888', padding: '14px 32px', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: '"Jost", sans-serif', textAlign: 'center' }}>
+            <a href="https://wa.me/77000513007" style={{ border: '1px solid #2A2520', color: '#888', padding: '14px 32px', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: '"Jost", sans-serif', textAlign: 'center' }}>
               {tr.consign_cta_whatsapp}
             </a>
           </div>

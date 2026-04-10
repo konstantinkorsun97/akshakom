@@ -65,7 +65,7 @@ export default function CartPage() {
       `Здравствуйте! Хочу оформить заказ:\n\n${itemsList}\n\nИтого: ${totalPrice.toLocaleString('ru-RU')} ₸\n\nИмя: ${name}\nТелефон: ${phone}`
     )
 
-    window.open(`https://wa.me/77712707975?text=${message}`, '_blank')
+    window.open(`https://wa.me/77000513007?text=${message}`, '_blank')
     setSent(true)
     clearCart()
   }

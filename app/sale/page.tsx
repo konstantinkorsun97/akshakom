@@ -116,7 +116,7 @@ export default function SalePage() {
                     ? 'Подпишитесь на наш Instagram и WhatsApp чтобы первыми узнавать об акциях'
                     : 'Instagram және WhatsApp-та акциялар туралы бірінші болып білу үшін жазылыңыз'}
                 </div>
-                <a href="https://wa.me/77712707975" target="_blank"
+                <a href="https://wa.me/77000513007" target="_blank"
                   style={{ background: '#25D366', color: '#fff', padding: '10px 24px', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: '"Jost", sans-serif', whiteSpace: 'nowrap' }}>
                   WhatsApp
                 </a>

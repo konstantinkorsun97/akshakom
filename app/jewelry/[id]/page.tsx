@@ -100,7 +100,7 @@ export default function ProductPage() {
               </div>
             </div>
             <div style={{ marginTop: '10px', padding: '10px 14px', background: '#F0EDE8', border: '1px solid #E2D9CC', fontSize: '11px', color: '#888', fontWeight: 300 }}>
-              {tr.product_photo_note} <span style={{ color: '#B8962E' }}>+7 771 270 7975</span>
+              {tr.product_photo_note} <span style={{ color: '#B8962E' }}>+7 700 051 3007</span>
             </div>
           </div>
 
@@ -176,7 +176,7 @@ export default function ProductPage() {
             {/* КОНТАКТЫ */}
             <div style={{ padding: '14px', background: '#fff', border: '1px solid #E2D9CC', fontSize: '12px', color: '#4A4540', fontWeight: 300, lineHeight: 1.7 }}>
               {tr.product_contacts}<br />
-              <span style={{ color: '#B8962E', fontWeight: 400 }}>+7 771 270 7975</span> · WhatsApp · Instagram
+              <span style={{ color: '#B8962E', fontWeight: 400 }}>+7 700 051 3007</span> · WhatsApp · Instagram
             </div>
           </div>
         </div>

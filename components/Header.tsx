@@ -273,7 +273,7 @@ export default function Header() {
         <div style={{ background: '#1A1612', padding: '8px 40px', display: 'flex', justifyContent: 'space-between' }}>
           <span style={{ fontSize: '11px', color: '#666', fontWeight: 300, letterSpacing: '1px' }}>{tr.topbar_left}</span>
           <span style={{ fontSize: '11px', color: '#D4AF57', fontWeight: 300, letterSpacing: '1px' }}>
-            +7 771 270 7975 · WhatsApp · @zoloto_karaganda_torgi
+            +7 700 051 3007 · WhatsApp · @zoloto_karaganda_torgi
           </span>
         </div>
       )}
@@ -414,7 +414,7 @@ export default function Header() {
                 {tr.login}
               </button>
               <div style={{ padding: '14px 20px', background: '#1A1612' }}>
-                <div style={{ fontSize: '11px', color: '#D4AF57', letterSpacing: '1px', fontWeight: 300 }}>+7 771 270 7975</div>
+                <div style={{ fontSize: '11px', color: '#D4AF57', letterSpacing: '1px', fontWeight: 300 }}>+7 700 051 3007</div>
                 <div style={{ fontSize: '10px', color: '#555', letterSpacing: '1px', fontWeight: 300, marginTop: '4px' }}>WhatsApp · @zoloto_karaganda_torgi</div>
               </div>
             </nav>

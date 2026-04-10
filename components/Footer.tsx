@@ -57,7 +57,7 @@ export default function Footer() {
         {!isMobile && (
           <div>
             <div style={{ fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase', color: '#B8962E', marginBottom: '12px', fontWeight: 400 }}>{tr.footer_contacts}</div>
-            {['+7 771 270 7975', 'WhatsApp', 'Instagram · @zoloto_karaganda_torgi', lang === 'ru' ? 'г. Карагандa' : 'Қарағанды қ.'].map((link) => (
+            {['+7 700 051 3007', 'WhatsApp', 'Instagram · @zoloto_karaganda_torgi', lang === 'ru' ? 'г. Карагандa' : 'Қарағанды қ.'].map((link) => (
               <div key={link} style={{ marginBottom: '8px' }}>
                 <a href="#" style={{ fontSize: '13px', color: '#555', textDecoration: 'none', fontWeight: 300 }}>{link}</a>
               </div>
@@ -70,7 +70,7 @@ export default function Footer() {
         <div style={{ marginBottom: '20px', paddingBottom: '20px', borderBottom: '1px solid #1A1A1A' }}>
           <div style={{ fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase', color: '#B8962E', marginBottom: '10px', fontWeight: 400 }}>{tr.footer_contacts}</div>
           <div style={{ fontSize: '13px', color: '#555', fontWeight: 300, lineHeight: 1.8 }}>
-            +7 771 270 7975 · WhatsApp<br />
+            +7 700 051 3007 · WhatsApp<br />
             Instagram · @zoloto_karaganda_torgi<br />
             {lang === 'ru' ? 'г. Карагандa' : 'Қарағанды қ.'}
           </div>
