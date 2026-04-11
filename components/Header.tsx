@@ -219,12 +219,14 @@ export default function Header() {
         }
       })
 
-      // Получаем текущие артикулы из БД
+      // Получаем ВСЕ артикулы из БД (и активные и неактивные)
       setProgress({ current: 0, total: rows.length, stage: 'Получаем данные из базы...' })
       const articlesRes = await apiCall({ password, action: 'get_articles' })
       const articlesData = await articlesRes.json()
-      const existingArticles: string[] = articlesData.articles || []
-      const existingSet = new Set(existingArticles)
+      const existingActiveArticles: string[] = articlesData.articles || []
+      const existingAllArticles: string[] = articlesData.all_articles || []
+      const existingActiveSet = new Set(existingActiveArticles)
+      const existingAllSet = new Set(existingAllArticles)
 
       // Upsert батчами по 50
       const BATCH = 50
@@ -240,8 +242,8 @@ export default function Header() {
         done += batch.length
       }
 
-      // Деактивируем удалённые
-      const toDeactivate = existingArticles.filter(a => !csvArticles.has(a))
+      // Деактивируем удалённые (только те что были активны)
+      const toDeactivate = existingActiveArticles.filter(a => !csvArticles.has(a))
       let deactivated = 0
       if (toDeactivate.length > 0) {
         setProgress({ current: done, total: products.length, stage: 'Снимаем с продажи устаревшие...' })
@@ -251,10 +253,14 @@ export default function Header() {
         }
       }
 
+      // Точный подсчёт: новые = нет вообще в базе, обновлено = были в базе (активные или нет)
+      const added = products.filter(p => !existingAllSet.has(p.article)).length
+      const updated = products.filter(p => existingAllSet.has(p.article)).length
+
       setResult({
         success: true,
-        added: products.filter(p => !existingSet.has(p.article)).length,
-        updated: products.filter(p => existingSet.has(p.article)).length,
+        added,
+        updated,
         deactivated,
         total: products.length,
       })

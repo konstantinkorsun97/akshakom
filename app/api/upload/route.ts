@@ -40,14 +40,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, count: articles.length })
     }
 
-    // Получить все активные артикулы из БД
+    // Получить все артикулы из БД (активные и неактивные)
     if (action === 'get_articles') {
-      const { data, error } = await supabaseAdmin
+      const { data: activeData, error: e1 } = await supabaseAdmin
         .from('products')
         .select('article')
         .eq('is_active', true)
-      if (error) throw error
-      return NextResponse.json({ articles: data?.map(p => p.article) || [] })
+      const { data: allData, error: e2 } = await supabaseAdmin
+        .from('products')
+        .select('article')
+      if (e1 || e2) throw e1 || e2
+      return NextResponse.json({
+        articles: activeData?.map(p => p.article) || [],
+        all_articles: allData?.map(p => p.article) || [],
+      })
     }
 
     return NextResponse.json({ error: 'Неизвестное действие' }, { status: 400 })
