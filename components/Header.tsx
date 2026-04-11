@@ -534,8 +534,8 @@ export default function Header() {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '20px' }}>
                       {[
                         { label: lang === 'ru' ? 'Всего в файле' : 'Файлда барлығы', value: result.total, color: '#1A1612' },
-                        { label: lang === 'ru' ? 'Добавлено новых' : 'Жаңа қосылды', value: result.added, color: '#27AE60' },
-                        { label: lang === 'ru' ? 'Обновлено' : 'Жаңартылды', value: result.updated, color: '#2980B9' },
+                        { label: lang === 'ru' ? 'Загружено в каталог' : 'Каталогқа жүктелді', value: result.added, color: '#27AE60' },
+                        { label: lang === 'ru' ? 'Уже было в базе' : 'Базада болған', value: result.updated, color: '#2980B9' },
                         { label: lang === 'ru' ? 'Снято с продажи' : 'Сатудан алынды', value: result.deactivated, color: '#E67E22' },
                       ].map(item => (
                         <div key={item.label} style={{ padding: '12px', background: '#F7F4EF', border: '1px solid #E2D9CC', textAlign: 'center' }}>
