@@ -82,8 +82,6 @@ export default function Header() {
   }
 
   function decodeCP1251(str: string): string {
-    // Файл уже декодирован как CP1251 при чтении через TextDecoder
-    // Эта функция теперь только на случай если в строке есть \xNN последовательности
     return str.replace(/\\x([0-9a-fA-F]{2})/g, (_, hex) => {
       try {
         return new TextDecoder('windows-1251').decode(new Uint8Array([parseInt(hex, 16)]))
@@ -97,30 +95,16 @@ export default function Header() {
     const first = d.split(/\s+/)[0] || ''
     let type = 'Изделие'
 
-    // Кольцо
     if (/^(К-ЦО|К\/ЦО|КЦО|К\\ЦО|К\.ЦО|К\.-ЦО|К--ЦО|К=ЦО|К_ЦО|К-ЦЦО|К-К|К-ЦР|К-ЦА|К-УО|К-ЦГО|КОЦ|КО-Ц|КЕ-ЦО|К-\*ЦО|К-РЕС|ПЕ\/КА|ПЕР\/НЬ|R-WJ|-ЦО|ЦО|КОЛ[^Ь]|КОЛЬЦО)/.test(first)) type = 'Кольцо'
     else if (first === 'К-' || first === 'К') type = 'Кольцо'
-    // Серьги
     else if (/^(С-ГИ|С-ГА|С\/ГИ|С\/ГА|СГИ|СГА|С\.ГИ|С\\ГИ|С_ГИ|С_ГА|С\\ГА|С\\ГТ|С\/ГТ|С-ГС|С-ГМ|С--ГИ|С-\/ГИ|С-\+ГИ|С-ШИ|С-И|С-Г|С-|C-ГИ|C-ГА|C\/ГИ|C\/И|C-А|CГИ|СЕРГИ|СЕРЬГА|СЕРЬГИ|СЕРЬГ|СЕРЬГТ|СЕРГТ|СЕРГ|М-ГИ|ПИРСИНГ|ДЕТ|ДЕТСКИЕ)/.test(first)) type = first.includes('ДЕТ') || first === 'ДЕТСКИЕ' ? 'Детские серьги' : 'Серьги'
-    // Цепочка
     else if (/^(ЦЕПЬ|ЦЕП|Ц-ПЬ|Ц\\ПЬ|Ц\.КА|Ц-КА|Ц-ППЬ|ЦКПЬ|ЦКП|ЦНПЬ|ЦЕПОЧ|ЦЕРЬ|БУСЫ|БЫСЫ|ОЖИРЕЛЬЕ|КАЛЬЕ)/.test(first)) type = 'Цепочка'
-    // Браслет
     else if (/^(Б-Т|БР-Т|Б-ЛЕТ|БР-ЕТ|БР\/Т|Б\/Т|Б\/Р|Б-СТ|Б-ЛТ|Б-РТ|Б\\Т|БР\\Т|БР\.Т|БР\.ЛЕТ|БРТ|БР-ЛЕТ|БР\/ЛЕТ|БРАСЛ|БРАСЛЕТ|Б-КА|БР-КТ|Б\.Р|БК|БР|БР-|БИЛЕЗИК)/.test(first)) type = 'Браслет'
-    // Подвеска
     else if (/^(П-КА|ПОД-КА|П\/КА|П\\КА|ПКА|П\.КА|П_КА|ПОД\.КА|ПОД\/КА|ПОДКА|ПО-КА|ПОД|ПОДВ|ПОДВЕС)/.test(first)) type = 'Подвеска'
-    // Кулон
     else if (/^(КУЛОН|К-Н|К-ОН|К-ЛОН|КУЛ|К\/Н)/.test(first)) type = 'Кулон'
-    // Печатка
     else if (/^(ПЕЧАТКА|ПЕЧ-КА|ПЕЧ)/.test(first)) type = 'Печатка'
-    // Крест
     else if (/^(КРЕСТ|КРЕСТИК|КРЕС)/.test(first)) type = 'Крест'
-    // Булавка
     else if (/^(БУЛАВКА|БУЛ-КА)/.test(first)) type = 'Булавка'
-    // Прочее → Изделие
-    // (КОРОНКИ, К-Т, ЧАСТЬ, ЗАЖИМ, ЭЛЕМЕНТЫ, БУЛОВКА, БУЛ/КА, ЭЛЕМ, К-РЕС,
-    //  П-К, ЛОМ, КОР, Б-РО, ПО-К, П-А, ЗАСТЁЖКИ, ЗВЕЗДА, ЭЛ-Т, ЧАСТИ, ЭЛ-ТЫ,
-    //  ЮР-Т, ЗОЛ, Б/А, ОРДЕН, БРОШ-КА, БЛ.К, КАФ, БРОШКА, К-У, ЗОЛОТОЕ, МОСТ,
-    //  ПРОТЯЖКА, КОРОНКА, ЗУБН, ЗВЕЗДЫ, БЕГУНОК и остальные)
 
     const parts = [type]
     if (wStone && wStone > 0) parts.push('с камнем')
@@ -181,7 +165,6 @@ export default function Header() {
     setProgress({ current: 0, total: 0, stage: 'Читаем файл...' })
 
     try {
-      // Читаем файл как бинарный (latin1) и декодируем как CP1251
       const buffer = await file.arrayBuffer()
       const bytes = new Uint8Array(buffer)
       const text = new TextDecoder('windows-1251').decode(bytes)
@@ -191,7 +174,8 @@ export default function Header() {
 
       setProgress({ current: 0, total: rows.length, stage: 'Подготовка данных...' })
 
-      const products = rows.map(row => {
+      // Шаг 1: строим сырой массив со всеми полями
+      const rawProducts = rows.map(row => {
         const proba = parseInt(row.PROBA) || 585
         const wStone = row.WEIGHT_WITH_STONE ? parseFloat(row.WEIGHT_WITH_STONE) : null
         const wNoStone = row.WEIGHT_WITHOUT_STONE ? parseFloat(row.WEIGHT_WITHOUT_STONE) : null
@@ -204,7 +188,8 @@ export default function Header() {
           zal_bil_id: parts[0].replace(/\s/g, ''),
           zalog_number: parseInt(parts[1]) || 1,
           open_date: row.OPEN_DATE ? row.OPEN_DATE.split('.').reverse().join('-') : null,
-          estimate_sum: parseFloat(row.ESTIMATE_SUM) || 0,
+          estimate_sum_raw: parseFloat(row.ESTIMATE_SUM) || 0, // сырая цена билета
+          estimate_sum: parseFloat(row.ESTIMATE_SUM) || 0,     // будет пересчитана ниже
           proba,
           weight_with_stone: wStone,
           weight_without_stone: wNoStone,
@@ -219,7 +204,54 @@ export default function Header() {
         }
       })
 
-      // Получаем ВСЕ артикулы из БД (и активные и неактивные)
+      // Шаг 2: пересчёт цены пропорционально весу внутри каждого билета
+      //
+      // Формула: цена_изделия = цена_билета × (вес_изделия / суммарный_вес_билета)
+      //
+      // Для веса используем weight_without_stone (вес без камня) как основной.
+      // Если у изделия нет веса — используем weight_with_stone.
+      // Если в билете только одно изделие — цена не меняется.
+      // Если суммарный вес билета = 0 — делим поровну между позициями.
+
+      // Группируем по zal_bil_id
+      const bilMap = new Map<string, typeof rawProducts>()
+      for (const p of rawProducts) {
+        const group = bilMap.get(p.zal_bil_id) || []
+        group.push(p)
+        bilMap.set(p.zal_bil_id, group)
+      }
+
+      const products = rawProducts.map(p => {
+        const group = bilMap.get(p.zal_bil_id)!
+
+        // Если в билете одна позиция — цена не меняется
+        if (group.length === 1) {
+          const { estimate_sum_raw, ...rest } = p
+          return rest
+        }
+
+        // Суммарный вес билета (берём weight_without_stone, fallback на weight_with_stone)
+        const totalWeight = group.reduce((sum, item) => {
+          return sum + (item.weight_without_stone ?? item.weight_with_stone ?? 0)
+        }, 0)
+
+        const itemWeight = p.weight_without_stone ?? p.weight_with_stone ?? 0
+
+        let proportionalPrice: number
+        if (totalWeight > 0) {
+          // Основной случай: пропорционально весу
+          proportionalPrice = p.estimate_sum_raw * (itemWeight / totalWeight)
+        } else {
+          // Крайний случай: у всех нулевой вес — делим поровну
+          proportionalPrice = p.estimate_sum_raw / group.length
+        }
+
+        // Округляем до целых тенге
+        const { estimate_sum_raw, ...rest } = p
+        return { ...rest, estimate_sum: Math.round(proportionalPrice) }
+      })
+
+      // Получаем все артикулы из БД
       setProgress({ current: 0, total: rows.length, stage: 'Получаем данные из базы...' })
       const articlesRes = await apiCall({ password, action: 'get_articles' })
       const articlesData = await articlesRes.json()
@@ -242,7 +274,7 @@ export default function Header() {
         done += batch.length
       }
 
-      // Деактивируем удалённые (только те что были активны)
+      // Деактивируем удалённые
       const toDeactivate = existingActiveArticles.filter(a => !csvArticles.has(a))
       let deactivated = 0
       if (toDeactivate.length > 0) {
@@ -253,7 +285,6 @@ export default function Header() {
         }
       }
 
-      // Точный подсчёт: новые = нет вообще в базе, обновлено = были в базе (активные или нет)
       const added = products.filter(p => !existingAllSet.has(p.article)).length
       const updated = products.filter(p => existingAllSet.has(p.article)).length
 
@@ -494,7 +525,6 @@ export default function Header() {
                       )}
                     </div>
 
-                    {/* ПРОГРЕСС */}
                     {uploading && (
                       <div style={{ marginBottom: '16px', padding: '16px', background: '#F7F4EF', border: '1px solid #E2D9CC' }}>
                         <div style={{ fontSize: '12px', color: '#4A4540', marginBottom: '10px', textAlign: 'center' }}>
@@ -519,7 +549,6 @@ export default function Header() {
                   </form>
                 )}
 
-                {/* УСПЕХ */}
                 {result?.success && (
                   <div>
                     <div style={{ padding: '20px', background: '#F0FFF4', border: '1px solid #B0EEB0', marginBottom: '20px', textAlign: 'center' }}>
@@ -551,7 +580,6 @@ export default function Header() {
                   </div>
                 )}
 
-                {/* ОШИБКА */}
                 {result?.error && (
                   <div>
                     <div style={{ padding: '20px', background: '#FFF0F0', border: '1px solid #FFB0B0', marginBottom: '16px', textAlign: 'center' }}>
