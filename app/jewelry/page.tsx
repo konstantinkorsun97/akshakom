@@ -223,7 +223,7 @@ function JewelryContent() {
       </div>
 
       <div style={{ marginTop: '20px', padding: '10px 16px', background: '#F0EDE8', border: '1px solid #E2D9CC', fontSize: '11px', color: '#888', fontWeight: 300 }}>
-        {tr.jewelry_disclaimer} <span style={{ color: '#B8962E' }}>+7 771 270 7975</span>
+        {tr.jewelry_disclaimer} <span style={{ color: '#B8962E' }}>+7 700 051 3007</span>
       </div>
     </div>
   )
