@@ -222,11 +222,17 @@ export default function Header() {
       }
 
       const products = rawProducts.map(p => {
+        const { estimate_sum_raw, ...rest } = p
+
+        // Для own-товаров ESTIMATE_SUM уже является ценой конкретного изделия — не трогаем
+        if (p.source_type !== 'commission') {
+          return rest
+        }
+
         const group = bilMap.get(p.zal_bil_id)!
 
         // Если в билете одна позиция — цена не меняется
         if (group.length === 1) {
-          const { estimate_sum_raw, ...rest } = p
           return rest
         }
 
@@ -240,14 +246,13 @@ export default function Header() {
         let proportionalPrice: number
         if (totalWeight > 0) {
           // Основной случай: пропорционально весу
-          proportionalPrice = p.estimate_sum_raw * (itemWeight / totalWeight)
+          proportionalPrice = estimate_sum_raw * (itemWeight / totalWeight)
         } else {
           // Крайний случай: у всех нулевой вес — делим поровну
-          proportionalPrice = p.estimate_sum_raw / group.length
+          proportionalPrice = estimate_sum_raw / group.length
         }
 
         // Округляем до целых тенге
-        const { estimate_sum_raw, ...rest } = p
         return { ...rest, estimate_sum: Math.round(proportionalPrice) }
       })
 
