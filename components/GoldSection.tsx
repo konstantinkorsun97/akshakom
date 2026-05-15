@@ -103,7 +103,7 @@ export default function GoldSection() {
       )}
 
       <div style={{ marginTop: '16px', padding: '10px 16px', background: '#F0EDE8', border: '1px solid #E2D9CC', fontSize: '11px', color: '#888', fontWeight: 300, lineHeight: 1.6 }}>
-        {tr.photo_disclaimer}{' '}<span style={{ color: '#B8962E' }}>+7 771 270 7975</span>{' '}
+        {tr.photo_disclaimer}{' '}<span style={{ color: '#B8962E' }}>+7 700 051 3007</span>{' '}
         {lang === 'ru' ? 'или в WhatsApp.' : 'немесе WhatsApp арқылы.'}
       </div>
     </section>
