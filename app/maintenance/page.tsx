@@ -32,8 +32,7 @@ export default function MaintenancePage() {
           </div>
 
           <p style={{ fontSize: '14px', color: '#666', fontWeight: 300, lineHeight: 1.8 }}>
-            Приносим извинения за неудобства.<br />
-            Совсем скоро сайт снова заработает.
+            Приносим извинения за неудобства.
           </p>
 
         </div>
